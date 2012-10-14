@@ -1,4 +1,4 @@
-lifecycle.js
-============
+# lifecycle.js
 
-Init, start, stop and destroy your JavaScript modules
+Start, stop and destroy plugins.
+
