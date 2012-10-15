@@ -11,13 +11,13 @@ var test      = require('utest');
 var assert    = require('assert');
 var sinon     = require('sinon');
 
-var lifecycle = require('../lib/lifecycle');
+var licy = require('../lib/lifecycle');
 
 
 function testIllegalArgs(name, message) {
   return function () {
     try {
-      lifecycle.stop(name);
+      licy.stop(name);
       assert.fail('Expection expected.');
     } catch (e) {
       assert.equal(e.name, 'TypeError');
@@ -27,10 +27,10 @@ function testIllegalArgs(name, message) {
 }
 
 
-test('lifecycle.stop', {
+test('stop', {
 
   after: function () {
-    lifecycle.removeAllListeners();
+    licy.removeAllListeners();
   },
 
 
@@ -44,27 +44,27 @@ test('lifecycle.stop', {
 
   'should invoke stop function from config': function () {
     var spy = sinon.spy();
-    lifecycle.plugin('test', {
+    licy.plugin('test', {
       start : function () {},
       stop  : spy
     });
 
-    lifecycle.start('test');
-    lifecycle.stop('test');
+    licy.start('test');
+    licy.stop('test');
 
     sinon.assert.calledOnce(spy);
   },
 
 
   'should throw if stop function throws': function () {
-    lifecycle.plugin('test', {
+    licy.plugin('test', {
       start : function () {},
       stop  : sinon.stub().throws(new Error('ouch'))
     });
-    lifecycle.start('test');
+    licy.start('test');
 
     try {
-      lifecycle.stop('test');
+      licy.stop('test');
       assert.fail("Exception expected");
     } catch (e) {
       assert.equal('Error', e.name);
@@ -74,16 +74,16 @@ test('lifecycle.stop', {
 
 
   'should err if stop function errs': function () {
-    lifecycle.plugin('test', {
+    licy.plugin('test', {
       start : function () {},
       stop : function () {
         this.callback()(new Error('ouch'));
       }
     });
-    lifecycle.start('test');
+    licy.start('test');
 
     try {
-      lifecycle.stop('test');
+      licy.stop('test');
       assert.fail("Exception expected");
     } catch (e) {
       assert.equal('Error', e.name);
@@ -95,13 +95,13 @@ test('lifecycle.stop', {
   'should invoke a given callback after stopping the plugin': function () {
     var spy1 = sinon.spy();
     var spy2 = sinon.spy();
-    lifecycle.plugin('test', {
+    licy.plugin('test', {
       start : function () {},
       stop  : spy1
     });
 
-    lifecycle.start('test');
-    lifecycle.stop('test', spy2);
+    licy.start('test');
+    licy.stop('test', spy2);
 
     sinon.assert.calledOnce(spy2);
     sinon.assert.callOrder(spy1, spy2);
@@ -109,7 +109,7 @@ test('lifecycle.stop', {
 
 
   'should wait for the stop callback to return': sinon.test(function () {
-    lifecycle.plugin('test', {
+    licy.plugin('test', {
       start : function () {},
       stop  : function (callback) {
         setTimeout(callback, 10);
@@ -117,8 +117,8 @@ test('lifecycle.stop', {
     });
     var spy = sinon.spy();
 
-    lifecycle.start('test');
-    lifecycle.stop('test', spy);
+    licy.start('test');
+    licy.stop('test', spy);
 
     sinon.assert.notCalled(spy);
     this.clock.tick(10);
@@ -128,16 +128,16 @@ test('lifecycle.stop', {
 
   'should not invoke config.stop on second stop attempt': function () {
     var spy = sinon.spy();
-    lifecycle.plugin('test', {
+    licy.plugin('test', {
       start : function () {},
       stop  : spy
     });
-    lifecycle.start('test');
-    lifecycle.stop('test');
+    licy.start('test');
+    licy.stop('test');
     spy.reset();
 
     try {
-      lifecycle.stop('test');
+      licy.stop('test');
     } catch (e) {}
 
     sinon.assert.notCalled(spy);
@@ -146,11 +146,11 @@ test('lifecycle.stop', {
 
   'should err on second stop attempt': function () {
     var spy = sinon.spy();
-    lifecycle.plugin('test', { start : function () {} });
+    licy.plugin('test', { start : function () {} });
 
-    lifecycle.start('test');
-    lifecycle.stop('test');
-    lifecycle.stop('test', spy);
+    licy.start('test');
+    licy.stop('test');
+    licy.stop('test', spy);
 
     sinon.assert.calledOnce(spy);
     sinon.assert.calledWith(spy, sinon.match({
@@ -161,10 +161,10 @@ test('lifecycle.stop', {
 
 
   'should throw if plugin was yet not started': function () {
-    lifecycle.plugin('test', { start : function () {} });
+    licy.plugin('test', { start : function () {} });
 
     try {
-      lifecycle.stop('test');
+      licy.stop('test');
       assert.fail("Exception expected");
     } catch (e) {
       assert.equal('Error', e.name);

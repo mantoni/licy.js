@@ -1,5 +1,5 @@
 {
-  "name"            : "lifecyclejs",
+  "name"            : "licy",
   "version"         : "0.1.0",
   "description"     : "Start, stop and destroy plugins",
   "keywords"        : ["lifecycle", "event", "node", "browser"],

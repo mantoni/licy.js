@@ -10,13 +10,13 @@
 var test      = require('utest');
 var assert    = require('assert');
 
-var lifecycle = require('../lib/lifecycle');
+var licy = require('../lib/lifecycle');
 
 
 function testIllegalArgs(name, config, message) {
   return function () {
     try {
-      lifecycle.plugin(name, config);
+      licy.plugin(name, config);
       assert.fail('Expection expected.');
     } catch (e) {
       assert.equal(e.name, 'TypeError');
@@ -26,16 +26,16 @@ function testIllegalArgs(name, config, message) {
 }
 
 
-test('lifecycle.plugin', {
+test('plugin', {
 
   after: function () {
-    lifecycle.removeAllListeners();
+    licy.removeAllListeners();
   },
 
 
   'should throw if no arguments are given': function () {
     try {
-      lifecycle.plugin();
+      licy.plugin();
       assert.fail('Expection expected.');
     } catch (e) {
       assert.equal(e.name, 'TypeError');
@@ -46,7 +46,7 @@ test('lifecycle.plugin', {
 
   'should throw if no config was given': function () {
     try {
-      lifecycle.plugin('some.plugin');
+      licy.plugin('some.plugin');
       assert.fail('Expection expected.');
     } catch (e) {
       assert.equal(e.name, 'TypeError');
@@ -77,7 +77,7 @@ test('lifecycle.plugin', {
 
   'should require start function in config': function () {
     try {
-      lifecycle.plugin('test', {});
+      licy.plugin('test', {});
       assert.fail('Expection expected.');
     } catch (e) {
       assert.equal(e.name, 'TypeError');
