@@ -58,7 +58,7 @@ licy.start('server');
 
 ## Hacking
 
-If you'd like to hack hub.js here is how to get started:
+If you'd like to hack licy.js here is how to get started:
 
  - `npm install` will setup everything you need.
  - `make` lints the code with JSLint and runs all unit tests.
