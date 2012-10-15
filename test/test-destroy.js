@@ -129,7 +129,68 @@ test('destroy', {
       assert.equal('Error', e.name);
       assert.equal('oups!', e.message);
     }
-  }
+  },
+
+
+  'should invoke config.stop on running plugin': function () {
+    var spy = sinon.spy();
+    licy.plugin('test', {
+      start : function () {},
+      stop  : spy
+    });
+    licy.start('test');
+
+    licy.destroy('test');
+
+    sinon.assert.calledOnce(spy);
+  },
+
+
+  'should not invoke config.stop on not started plugin': function () {
+    var spy = sinon.spy();
+    licy.plugin('test', {
+      start : function () {},
+      stop  : spy
+    });
+
+    licy.destroy('test');
+
+    sinon.assert.notCalled(spy);
+  },
+
+
+  'should not invoke config.stop on stopped plugin': function () {
+    var spy = sinon.spy();
+    licy.plugin('test', {
+      start : function () {},
+      stop  : spy
+    });
+    licy.start('test');
+    licy.stop('test');
+    spy.reset();
+
+    licy.destroy('test');
+
+    sinon.assert.notCalled(spy);
+  },
+
+
+  'should not invoke config.destroy if config.stop does not complete':
+    function () {
+      var spy = sinon.spy();
+      licy.plugin('test', {
+        start   : function () {},
+        stop    : function (callback) {
+          // Not invoking the callback here.
+        },
+        destroy : spy
+      });
+      licy.start('test');
+
+      licy.destroy('test');
+
+      sinon.assert.notCalled(spy);
+    }
 
 
 });
