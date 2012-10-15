@@ -112,6 +112,39 @@ test('start', {
   }),
 
 
+  'should pass error to start callback': function () {
+    var spy = sinon.spy();
+    var err = new Error();
+    licy.plugin('test', { start : function () { throw err; } });
+
+    licy.start('test', spy);
+
+    sinon.assert.calledWith(spy, err);
+  },
+
+
+  'should pass null and return value to start callback': function () {
+    var spy = sinon.spy();
+    var val = function () {};
+    licy.plugin('test', { start : function () { return val; } });
+
+    licy.start('test', spy);
+
+    sinon.assert.calledWith(spy, null, val);
+  },
+
+
+  'should pass array of values for wildcard starts': function () {
+    var spy = sinon.spy();
+    licy.plugin('test.1', { start : function () { return 1; } });
+    licy.plugin('test.2', { start : function () { return 2; } });
+
+    licy.start('test.*', spy);
+
+    sinon.assert.calledWith(spy, null, [1, 2]);
+  },
+
+
   'should not invoke config.start on second start attempt': function () {
     var spy = sinon.spy();
     licy.plugin('test', { start : spy });
