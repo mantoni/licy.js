@@ -48,8 +48,8 @@ licy.plugin('server', {
     });
   },
 
-  stop : function (server, callback) {
-    server.close(callback);
+  stop : function (callback) {
+    this.instance.close(callback);
   }
 });
 
