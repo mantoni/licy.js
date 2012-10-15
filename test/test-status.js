@@ -1,5 +1,5 @@
 /**
- * lifecycle.js
+ * licy.js
  *
  * Copyright (c) 2012 Maximilian Antoni <mail@maxantoni.de>
  *
@@ -7,10 +7,10 @@
  */
 'use strict';
 
-var test      = require('utest');
-var assert    = require('assert');
+var test    = require('utest');
+var assert  = require('assert');
 
-var licy = require('../lib/lifecycle');
+var licy    = require('../lib/licy');
 
 
 function testIllegalArgs(name, message) {

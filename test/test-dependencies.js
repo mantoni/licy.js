@@ -1,5 +1,5 @@
 /**
- * lifecycle.js
+ * licy.js
  *
  * Copyright (c) 2012 Maximilian Antoni <mail@maxantoni.de>
  *
@@ -11,7 +11,7 @@ var test    = require('utest');
 var assert  = require('assert');
 var sinon   = require('sinon');
 
-var licy    = require('../lib/lifecycle');
+var licy    = require('../lib/licy');
 
 
 test('dependencies', {

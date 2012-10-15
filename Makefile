@@ -11,15 +11,15 @@ test:
 
 compile: lint test
 	@nomo
-	@node_modules/.bin/uglifyjs lifecycle.js > lifecycle.min.js
+	@node_modules/.bin/uglifyjs licy.js > licy.min.js
 
 version := $(shell node -e "console.log(JSON.parse(require('fs').readFileSync('package.json')).version)")
-folder := lifecyclejs-${version}
+folder := licy-${version}
 
 package: compile
 	@echo "Creating package ${folder}.tgz"
 	@mkdir ${folder}
-	@mv hub.js hub.min.js ${folder}
+	@mv licy.js licy.min.js ${folder}
 	@cp LICENSE README.md ${folder}
 	@tar -czf ${folder}.tgz ${folder}
 	@rm -r ${folder}
