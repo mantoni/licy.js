@@ -1,11 +1,11 @@
 {
   "name"            : "licy",
   "version"         : "0.1.0",
-  "description"     : "Start, stop and destroy plugins",
-  "keywords"        : ["lifecycle", "event", "node", "browser"],
+  "description"     : "Asynchronous dependency and lifecycle management for Node and the browser",
+  "keywords"        : ["lifecycle", "dependency", "node", "browser"],
   "author"          : "Maximilian Antoni (http://maxantoni.de)",
-  "homepage"        : "http://mantoni.github.com/lifecycle.js",
-  "main"            : "./lib/lifecycle.js",
+  "homepage"        : "http://mantoni.github.com/licy.js",
+  "main"            : "./lib/licy.js",
   "engines"         : {
     "node"          : ">=0.6"
   },
@@ -14,7 +14,7 @@
   },
   "repository"      : {
     "type"          : "git",
-    "url"           : "https://github.com/mantoni/lifecycle.js.git"
+    "url"           : "https://github.com/mantoni/licy.js.git"
   },
   "dependencies"    : {
     "hubjs"         : "~0.4.0"
@@ -28,9 +28,9 @@
   },
   "files"           : ["lib", "README.md", "LICENSE"],
   "nomo"            : {
-    "name"          : "lifecycle.js",
-    "require"       : "lib/lifecycle",
-    "exportTarget"  : "window.lifecycle",
-    "fileName"      : "lifecycle.js"
+    "name"          : "licy.js",
+    "require"       : "lib/licy",
+    "exportTarget"  : "window.licy",
+    "fileName"      : "licy.js"
   }
 }
