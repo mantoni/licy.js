@@ -170,6 +170,20 @@ test('stop', {
       assert.equal('Error', e.name);
       assert.equal('Plugin "test" is not running', e.message);
     }
+  },
+
+
+  'should have return value from start as instance on scope': function () {
+    var spy = sinon.spy();
+    licy.plugin('test', {
+      start : function () { return 42; },
+      stop  : spy
+    });
+
+    licy.start('test');
+    licy.stop('test');
+
+    assert.equal(spy.firstCall.thisValue.instance, 42);
   }
 
 
