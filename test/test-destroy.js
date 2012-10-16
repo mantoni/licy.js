@@ -190,7 +190,25 @@ test('destroy', {
       licy.destroy('test');
 
       sinon.assert.notCalled(spy);
-    }
+    },
 
+
+  'should invoke given callback on completion': function () {
+    var spy = sinon.spy();
+    var invoke;
+    licy.plugin('test', {
+      start : function () {},
+      stop  : function (callback) {
+        invoke = callback;
+      }
+    });
+    licy.start('test');
+
+    licy.destroy('test', spy);
+
+    sinon.assert.notCalled(spy);
+    invoke();
+    sinon.assert.calledOnce(spy);
+  }
 
 });
