@@ -4,6 +4,8 @@
  * Copyright (c) 2012 Maximilian Antoni <mail@maxantoni.de>
  *
  * @license MIT
+ *
+ * Nodes webserver example sliced into some licy plugins.
  */
 'use strict';
 
