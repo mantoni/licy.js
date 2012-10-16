@@ -17,7 +17,7 @@ var licy    = require('../lib/licy');
 function testIllegalArgs(name, callback, message) {
   return function () {
     try {
-      licy.fetch(name, callback);
+      licy.require(name, callback);
       assert.fail('Expection expected.');
     } catch (e) {
       assert.equal(e.name, 'TypeError');
@@ -27,7 +27,7 @@ function testIllegalArgs(name, callback, message) {
 }
 
 
-test('fetch', {
+test('require', {
 
   after: function () {
     licy.removeAllListeners();
@@ -50,7 +50,7 @@ test('fetch', {
     var spy = sinon.spy();
     licy.plugin('test', spy);
 
-    licy.fetch('test', function () {});
+    licy.require('test', function () {});
 
     sinon.assert.calledOnce(spy);
   },
@@ -60,7 +60,7 @@ test('fetch', {
     var spy = sinon.spy();
     licy.plugin('test', sinon.stub().throws(new Error('ouch')));
 
-    licy.fetch('test', spy);
+    licy.require('test', spy);
 
     sinon.assert.calledOnce(spy);
     sinon.assert.calledWithMatch(spy, {
@@ -76,7 +76,7 @@ test('fetch', {
       this.callback()(new Error('ouch'));
     });
 
-    licy.fetch('test', spy);
+    licy.require('test', spy);
 
     sinon.assert.calledOnce(spy);
     sinon.assert.calledWithMatch(spy, {
@@ -91,7 +91,7 @@ test('fetch', {
     var spy2 = sinon.spy();
     licy.plugin('test', spy1);
 
-    licy.fetch('test', spy2);
+    licy.require('test', spy2);
 
     sinon.assert.calledOnce(spy2);
     sinon.assert.callOrder(spy1, spy2);
@@ -104,7 +104,7 @@ test('fetch', {
     });
     var spy = sinon.spy();
 
-    licy.fetch('test', spy);
+    licy.require('test', spy);
 
     sinon.assert.notCalled(spy);
     this.clock.tick(10);
@@ -112,12 +112,12 @@ test('fetch', {
   }),
 
 
-  'should pass error to fetch callback': function () {
+  'should pass error to require callback': function () {
     var spy = sinon.spy();
     var err = new Error();
     licy.plugin('test', function () { throw err; });
 
-    licy.fetch('test', spy);
+    licy.require('test', spy);
 
     sinon.assert.calledWith(spy, err);
   },
@@ -128,45 +128,57 @@ test('fetch', {
     var val = function () {};
     licy.plugin('test', function () { return val; });
 
-    licy.fetch('test', spy);
+    licy.require('test', spy);
 
-    sinon.assert.calledWith(spy, null, val);
+    sinon.assert.calledWith(spy, null, { test : val });
   },
 
 
-  'should pass array of values for wildcard fetches': function () {
+  'should pass hash of values for wildcard require': function () {
     var spy = sinon.spy();
     licy.plugin('test.1', function () { return 1; });
     licy.plugin('test.2', function () { return 2; });
 
-    licy.fetch('test.*', spy);
+    licy.require('test.*', spy);
 
-    sinon.assert.calledWith(spy, null, [1, 2]);
+    sinon.assert.calledWith(spy, null, { 'test.1' : 1, 'test.2' : 2 });
+  },
+
+
+  'should pass error and empty hash for wildcard require': function () {
+    var spy = sinon.spy();
+    var err = new Error();
+    licy.plugin('test.ok', function () { return true; });
+    licy.plugin('test.err', function () { throw err; });
+
+    licy.require('test.*', spy);
+
+    sinon.assert.calledWith(spy, err, {});
   },
 
 
   'should not invoke config.start on second start attempt': function () {
     var spy = sinon.spy();
     licy.plugin('test', spy);
-    licy.fetch('test', function () {});
+    licy.require('test', function () {});
     spy.reset();
 
-    licy.fetch('test', function () {});
+    licy.require('test', function () {});
 
     sinon.assert.notCalled(spy);
   },
 
 
-  'should return same plugin instance on second fetch': function () {
+  'should return same plugin instance on second require': function () {
     var spy       = sinon.spy();
     var instance  = function () {};
     licy.plugin('test', function () { return instance; });
 
-    licy.fetch('test', function () {});
-    licy.fetch('test', spy);
+    licy.require('test', function () {});
+    licy.require('test', spy);
 
     sinon.assert.calledOnce(spy);
-    sinon.assert.calledWith(spy, null, instance);
+    sinon.assert.calledWith(spy, null, { test : instance });
   },
 
 
@@ -176,7 +188,7 @@ test('fetch', {
     licy.start('test');
 
     assert.doesNotThrow(function () {
-      licy.fetch('test', function () {});
+      licy.require('test', function () {});
     });
 
     assert.equal(callCount, 1);
@@ -191,11 +203,11 @@ test('fetch', {
     });
     licy.start('test');
 
-    licy.fetch('test', spy);
+    licy.require('test', spy);
     invoke(null, 42);
 
     sinon.assert.calledOnce(spy);
-    sinon.assert.calledWith(spy, null, 42);
+    sinon.assert.calledWith(spy, null, { test : 42 });
   },
 
 
@@ -208,7 +220,7 @@ test('fetch', {
     });
     licy.start('test', function () {});
 
-    licy.fetch('test', spy);
+    licy.require('test', spy);
     invoke(err);
 
     sinon.assert.calledOnce(spy);
