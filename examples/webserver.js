@@ -10,20 +10,19 @@
 var licy = require('../lib/licy');
 var http = require('http');
 
-licy.plugin('config', {
-  start : function () {
-    return { port : 1337 };
-  }
+
+licy.plugin('config', function () {
+  return { port : 1337 };
 });
 
-licy.plugin('handler', {
-  start : function () {
-    return function (req, res) {
-      res.writeHead(200, {'Content-Type': 'text/plain'});
-      res.end('Hello World\n');
-    };
-  }
+
+licy.plugin('handler', function () {
+  return function (req, res) {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end('Hello World\n');
+  };
 });
+
 
 licy.plugin('server', {
   dependencies : ['config', 'handler'],
@@ -41,6 +40,14 @@ licy.plugin('server', {
   }
 });
 
+
 licy.start('server', function () {
   console.log('Server running at http://localhost:1337');
+});
+
+process.on('SIGINT', function () {
+  licy.stop('server', function () {
+    console.log('Server closed.\n');
+    process.exit();
+  });
 });
