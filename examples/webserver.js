@@ -7,6 +7,8 @@
  */
 'use strict';
 
+require('./logger');
+
 var licy = require('../lib/licy');
 var http = require('http');
 
@@ -46,8 +48,9 @@ licy.start('server', function () {
 });
 
 process.on('SIGINT', function () {
-  licy.stop('server', function () {
-    console.log('Server closed.\n');
+  console.log('Closing server');
+  licy.destroy('server', function (err) {
+    console.log(err ? err : 'Server closed.');
     process.exit();
   });
 });
