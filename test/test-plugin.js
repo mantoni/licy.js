@@ -9,6 +9,7 @@
 
 var test    = require('utest');
 var assert  = require('assert');
+var sinon   = require('sinon');
 
 var licy    = require('../lib/licy');
 
@@ -71,10 +72,6 @@ test('plugin', {
     'Expected config to be object, but it was array'),
 
 
-  'should throw if config is function': testIllegalArgs('test',
-    function () {}, 'Expected config to be object, but it was function'),
-
-
   'should require start function in config': function () {
     try {
       licy.plugin('test', {});
@@ -84,6 +81,23 @@ test('plugin', {
       assert.equal(e.message,
         'Expected config.start to be function, but it was undefined');
     }
+  },
+
+
+  'should not throw if conifg is function': function () {
+    assert.doesNotThrow(function () {
+      licy.plugin('test', function () {});
+    });
+  },
+
+
+  'should use config function as start function': function () {
+    var spy = sinon.spy();
+
+    licy.plugin('test', spy);
+    licy.start('test');
+
+    sinon.assert.calledOnce(spy);
   }
 
 
