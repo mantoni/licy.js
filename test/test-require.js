@@ -72,8 +72,8 @@ test('require', {
 
   'should err if start function errs': function () {
     var spy = sinon.spy();
-    licy.plugin('test', function () {
-      this.callback()(new Error('ouch'));
+    licy.plugin('test', function (test, callback) {
+      callback(new Error('ouch'));
     });
 
     licy.require('test', spy);
@@ -99,7 +99,7 @@ test('require', {
 
 
   'should wait for the start callback to return': sinon.test(function () {
-    licy.plugin('test', function (callback) {
+    licy.plugin('test', function (test, callback) {
       setTimeout(callback, 10);
     });
     var spy = sinon.spy();
@@ -123,29 +123,30 @@ test('require', {
   },
 
 
-  'should pass null and return value to start callback': function () {
+  'should return null and view': function () {
     var spy = sinon.spy();
-    var val = function () {};
-    licy.plugin('test', function () { return val; });
+    var view;
+    licy.plugin('test', function (test) { view = test; });
 
     licy.require('test', spy);
 
-    sinon.assert.calledWith(spy, null, { test : val });
+    sinon.assert.calledWith(spy, null, view);
   },
 
 
-  'should pass hash of values for wildcard require': function () {
+  'should return null and array of views for wildcard require': function () {
     var spy = sinon.spy();
-    licy.plugin('test.1', function () { return 1; });
-    licy.plugin('test.2', function () { return 2; });
+    var views = [];
+    licy.plugin('test.1', function (test) { views.push(test); });
+    licy.plugin('test.2', function (test) { views.push(test); });
 
     licy.require('test.*', spy);
 
-    sinon.assert.calledWith(spy, null, { 'test.1' : 1, 'test.2' : 2 });
+    sinon.assert.calledWith(spy, null, views);
   },
 
 
-  'should pass error and empty hash for wildcard require': function () {
+  'should return error for wildcard require': function () {
     var spy = sinon.spy();
     var err = new Error();
     licy.plugin('test.ok', function () { return true; });
@@ -153,11 +154,11 @@ test('require', {
 
     licy.require('test.*', spy);
 
-    sinon.assert.calledWith(spy, err, {});
+    sinon.assert.calledWith(spy, err);
   },
 
 
-  'should not invoke config.start on second start attempt': function () {
+  'should not invoke start on second start attempt': function () {
     var spy = sinon.spy();
     licy.plugin('test', spy);
     licy.require('test', function () {});
@@ -169,22 +170,38 @@ test('require', {
   },
 
 
-  'should return same plugin instance on second require': function () {
-    var spy       = sinon.spy();
-    var instance  = function () {};
-    licy.plugin('test', function () { return instance; });
+  'should return view passed to start on first require': function () {
+    var spy = sinon.spy();
+    var view;
+    licy.plugin('test', function (test) {
+      view = test;
+    });
+
+    licy.require('test', spy);
+
+    sinon.assert.calledOnce(spy);
+    sinon.assert.calledWith(spy, null, sinon.match.same(view));
+  },
+
+
+  'should return same view on second require': function () {
+    var spy = sinon.spy();
+    var view;
+    licy.plugin('test', function (test) {
+      view = test;
+    });
 
     licy.require('test', function () {});
     licy.require('test', spy);
 
     sinon.assert.calledOnce(spy);
-    sinon.assert.calledWith(spy, null, { test : instance });
+    sinon.assert.calledWith(spy, null, sinon.match.same(view));
   },
 
 
   'should not attempt to start again if currently starting': function () {
     var callCount = 0;
-    licy.plugin('test', function (callback) { callCount++; });
+    licy.plugin('test', function (test, callback) { callCount++; });
     licy.start('test');
 
     assert.doesNotThrow(function () {
@@ -195,19 +212,21 @@ test('require', {
   },
 
 
-  'should yield plugin instance once started': function () {
+  'should yield view once started': function () {
     var spy = sinon.spy();
     var invoke;
-    licy.plugin('test', function (callback) {
-      invoke = callback;
+    var view;
+    licy.plugin('test', function (test, callback) {
+      view    = test;
+      invoke  = callback;
     });
     licy.start('test');
 
     licy.require('test', spy);
-    invoke(null, 42);
+    invoke();
 
     sinon.assert.calledOnce(spy);
-    sinon.assert.calledWith(spy, null, { test : 42 });
+    sinon.assert.calledWith(spy, null, view);
   },
 
 
@@ -215,7 +234,7 @@ test('require', {
     var spy = sinon.spy();
     var err = new Error();
     var invoke;
-    licy.plugin('test', function (callback) {
+    licy.plugin('test', function (test, callback) {
       invoke = callback;
     });
     licy.start('test', function () {});

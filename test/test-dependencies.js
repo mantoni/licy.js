@@ -21,16 +21,37 @@ test('dependencies', {
   },
 
 
+  'should throw if dependencies are null': function () {
+    try {
+      licy.plugin('test', null, function () {});
+      assert.fail('Exception expected');
+    } catch (e) {
+      assert.equal(e.name, 'TypeError');
+      assert.equal(e.message,
+        'Expected dependencies to be array, but it was null');
+    }
+  },
+
+
+  'should throw if dependencies are object': function () {
+    try {
+      licy.plugin('test', {}, function () {});
+      assert.fail('Exception expected');
+    } catch (e) {
+      assert.equal(e.name, 'TypeError');
+      assert.equal(e.message,
+        'Expected dependencies to be array, but it was object');
+    }
+  },
+
+
   'should start dependencies before starting plugin': function () {
     var spyA = sinon.spy();
     var spyB = sinon.spy();
     var spyC = sinon.spy();
-    licy.plugin('a', { start : spyA });
-    licy.plugin('b', { start : spyB });
-    licy.plugin('c', {
-      dependencies  : ['a', 'b'],
-      start         : spyC
-    });
+    licy.plugin('a', spyA);
+    licy.plugin('b', spyB);
+    licy.plugin('c', ['a', 'b'], spyC);
 
     licy.start('c');
 
@@ -42,16 +63,11 @@ test('dependencies', {
 
 
   'should not start plugin if dependency does not return': function () {
-    licy.plugin('required', {
-      start : function (callback) {
-        // Simply not invoking callback.
-      }
+    licy.plugin('required', function (hub, callback) {
+      // Simply not invoking callback.
     });
     var spy = sinon.spy();
-    licy.plugin('test', {
-      dependencies  : ['required'],
-      start         : spy
-    });
+    licy.plugin('test', ['required'], spy);
 
     licy.start('test');
 
@@ -60,16 +76,11 @@ test('dependencies', {
 
 
   'should not start plugin if dependency throws': function () {
-    licy.plugin('required', {
-      start : function () {
-        throw new TypeError('d`oh!');
-      }
+    licy.plugin('required', function () {
+      throw new TypeError('d`oh!');
     });
     var spy = sinon.spy();
-    licy.plugin('test', {
-      dependencies  : ['required'],
-      start         : spy
-    });
+    licy.plugin('test', ['required'], spy);
 
     try {
       licy.start('test');
@@ -84,15 +95,9 @@ test('dependencies', {
 
   'should not throw or start same dependency twice': function () {
     var spy = sinon.spy();
-    licy.plugin('required', { start : spy });
-    licy.plugin('other', {
-      dependencies  : ['required'],
-      start         : function () {}
-    });
-    licy.plugin('test', {
-      dependencies  : ['required', 'other'],
-      start         : function () {}
-    });
+    licy.plugin('required', spy);
+    licy.plugin('other', ['required'], function () {});
+    licy.plugin('test', ['required', 'other'], function () {});
 
     assert.doesNotThrow(function () {
       licy.start('test');
@@ -101,65 +106,19 @@ test('dependencies', {
   },
 
 
-  'should expose dependencies on scope object in start': function () {
-    var spy = sinon.spy();
-    var a   = function A() {};
-    var b   = function B() {};
-    licy.plugin('a', { start : function () { return a; } });
-    licy.plugin('b', { start : function () { return b; } });
-    licy.plugin('test', {
-      dependencies  : ['a', 'b'],
-      start         : spy
-    });
+  'should not mess up array of values for wildcard starts with dependency':
+    function () {
+      var spy = sinon.spy();
+      var view;
+      licy.plugin('foo', function () {});
+      licy.plugin('bar', function () {});
+      licy.plugin('test.run', ['foo', 'bar'], function (test) {
+        view = test;
+      });
 
-    licy.start('test');
+      licy.start('test.*', spy);
 
-    var dependencies = spy.firstCall.thisValue.dependencies;
-    assert.deepEqual(dependencies, { a : a, b : b });
-
-    /* TODO Use this nicer way after the next sinon release.
-    sinon.assert.calledOn(spy, sinon.match({
-      dependencies : { a : a, b : b }
-    }));
-    */
-  },
-
-
-  'should not mess up array of values for wildcard starts': function () {
-    var spy = sinon.spy();
-    licy.plugin('foo', { start : function () {} });
-    licy.plugin('test.run', {
-      dependencies  : ['foo'],
-      start         : function () { return 42; }
-    });
-
-    licy.start('test.*', spy);
-
-    sinon.assert.calledWith(spy, null, [42]);
-  },
-
-
-  'should resolve wildcard depedencies': function () {
-    var spy = sinon.spy();
-    licy.plugin('dep.a', { start : function () { return 'a'; } });
-    licy.plugin('dep.b', { start : function () { return 'b'; } });
-    licy.plugin('test', {
-      dependencies  : ['dep.*'],
-      start         : spy
-    });
-
-    licy.start('test');
-
-    var dependencies = spy.firstCall.thisValue.dependencies;
-    assert.deepEqual(dependencies, { 'dep.a' : 'a', 'dep.b' : 'b' });
-
-    /* TODO Use this nicer way after the next sinon release.
-    sinon.assert.calledOn(spy, sinon.match({
-      dependencies : { 'dep.a' : 'a', 'dep.b' : 'b' }
-    }));
-    */
-  }
-
+      sinon.assert.calledWith(spy, null, [view]);
+    }
 
 });
-

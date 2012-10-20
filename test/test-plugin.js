@@ -9,15 +9,14 @@
 
 var test    = require('utest');
 var assert  = require('assert');
-var sinon   = require('sinon');
 
 var licy    = require('../lib/licy');
 
 
-function testIllegalArgs(name, config, message) {
+function testIllegalArgs(name, start, message) {
   return function () {
     try {
-      licy.plugin(name, config);
+      licy.plugin(name, start);
       assert.fail('Expection expected.');
     } catch (e) {
       assert.equal(e.name, 'TypeError');
@@ -51,54 +50,28 @@ test('plugin', {
       assert.fail('Expection expected.');
     } catch (e) {
       assert.equal(e.name, 'TypeError');
-      assert.equal(e.message, 'No config given.');
+      assert.equal(e.message, 'No start function given.');
     }
   },
 
 
-  'should throw if name is null': testIllegalArgs(null, {},
+  'should throw if name is null': testIllegalArgs(null, function () {},
     'Expected name to be string, but it was null'),
 
 
-  'should throw if name is object': testIllegalArgs({}, {},
+  'should throw if name is object': testIllegalArgs({}, function () {},
     'Expected name to be string, but it was object'),
 
 
-  'should throw if name is array': testIllegalArgs([], {},
+  'should throw if name is array': testIllegalArgs([], function () {},
     'Expected name to be string, but it was array'),
 
 
-  'should throw if config is array': testIllegalArgs('test', [],
-    'Expected config to be object, but it was array'),
+  'should throw if start function is null': testIllegalArgs('test', null,
+    'Expected start to be function, but it was null'),
 
 
-  'should require start function in config': function () {
-    try {
-      licy.plugin('test', {});
-      assert.fail('Expection expected.');
-    } catch (e) {
-      assert.equal(e.name, 'TypeError');
-      assert.equal(e.message,
-        'Expected config.start to be function, but it was undefined');
-    }
-  },
-
-
-  'should not throw if conifg is function': function () {
-    assert.doesNotThrow(function () {
-      licy.plugin('test', function () {});
-    });
-  },
-
-
-  'should use config function as start function': function () {
-    var spy = sinon.spy();
-
-    licy.plugin('test', spy);
-    licy.start('test');
-
-    sinon.assert.calledOnce(spy);
-  }
-
+  'should throw if start function is object': testIllegalArgs('test', {},
+    'Expected start to be function, but it was object')
 
 });

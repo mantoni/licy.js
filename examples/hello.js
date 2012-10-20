@@ -9,10 +9,14 @@
 
 var licy = require('../lib/licy');
 
-licy.plugin('hello', function () {
-  return 'Oh, hi world!';
+licy.plugin('hello', function (hello) {
+  hello.on('oh', function (name) {
+    return 'Oh, hi ' + name + '!';
+  });
 });
 
 licy.start('hello', function (err, hello) {
-  console.log(hello);
+  hello.emit('oh', 'world', function (err, result) {
+    console.log(result);
+  });
 });

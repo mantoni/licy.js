@@ -42,9 +42,9 @@ test('start', {
     'Expected name to be string, but it was number'),
 
 
-  'should invoke start function from config': function () {
+  'should invoke start function': function () {
     var spy = sinon.spy();
-    licy.plugin('test', { start : spy });
+    licy.plugin('test', spy);
 
     licy.start('test');
 
@@ -53,8 +53,8 @@ test('start', {
 
 
   'should throw if start function throws': function () {
-    licy.plugin('test', {
-      start : sinon.stub().throws(new Error('ouch'))
+    licy.plugin('test', function () {
+      throw new Error('ouch');
     });
 
     try {
@@ -68,10 +68,8 @@ test('start', {
 
 
   'should err if start function errs': function () {
-    licy.plugin('test', {
-      start : function () {
-        this.callback()(new Error('ouch'));
-      }
+    licy.plugin('test', function (test, callback) {
+      callback(new Error('ouch'));
     });
 
     try {
@@ -87,7 +85,7 @@ test('start', {
   'should invoke a given callback after starting the plugin': function () {
     var spy1 = sinon.spy();
     var spy2 = sinon.spy();
-    licy.plugin('test', { start : spy1 });
+    licy.plugin('test', spy1);
 
     licy.start('test', spy2);
 
@@ -97,10 +95,8 @@ test('start', {
 
 
   'should wait for the start callback to return': sinon.test(function () {
-    licy.plugin('test', {
-      start : function (callback) {
-        setTimeout(callback, 10);
-      }
+    licy.plugin('test', function (test, callback) {
+      setTimeout(callback, 10);
     });
     var spy = sinon.spy();
 
@@ -115,7 +111,7 @@ test('start', {
   'should pass error to start callback': function () {
     var spy = sinon.spy();
     var err = new Error();
-    licy.plugin('test', { start : function () { throw err; } });
+    licy.plugin('test', function () { throw err; });
 
     licy.start('test', spy);
 
@@ -123,31 +119,58 @@ test('start', {
   },
 
 
-  'should pass null and return value to start callback': function () {
+  'should pass null and created view to start callback': function () {
     var spy = sinon.spy();
-    var val = function () {};
-    licy.plugin('test', { start : function () { return val; } });
+    var view;
+    licy.plugin('test', function (test) { view = test; });
 
     licy.start('test', spy);
 
-    sinon.assert.calledWith(spy, null, val);
+    sinon.assert.calledWith(spy, null, view);
   },
 
 
-  'should pass array of values for wildcard starts': function () {
+  'should pass array of views for wildcard starts': function () {
     var spy = sinon.spy();
-    licy.plugin('test.1', { start : function () { return 1; } });
-    licy.plugin('test.2', { start : function () { return 2; } });
+    var views = [];
+    licy.plugin('test.1', function (test) { views.push(test); });
+    licy.plugin('test.2', function (test) { views.push(test); });
 
     licy.start('test.*', spy);
 
-    sinon.assert.calledWith(spy, null, [1, 2]);
+    sinon.assert.calledWith(spy, null, views);
+  },
+
+
+  'should create different views for each wildcard start': function () {
+    var spy = sinon.spy();
+    var view1, view2;
+    licy.plugin('test.1', function (test) { view1 = test; });
+    licy.plugin('test.2', function (test) { view2 = test; });
+
+    licy.start('test.*', spy);
+
+    assert.notStrictEqual(view1, view2);
+  },
+
+
+  'should not mess up array of values with return values': function () {
+    var spy = sinon.spy();
+    var view;
+    licy.plugin('test.run', function (test) {
+      view = test;
+      return 666;
+    });
+
+    licy.start('test.*', spy);
+
+    sinon.assert.calledWith(spy, null, [view]);
   },
 
 
   'should not invoke config.start on second start attempt': function () {
     var spy = sinon.spy();
-    licy.plugin('test', { start : spy });
+    licy.plugin('test', spy);
     licy.start('test');
     spy.reset();
 
@@ -161,7 +184,7 @@ test('start', {
 
   'should err on second start attempt': function () {
     var spy = sinon.spy();
-    licy.plugin('test', { start : function () {} });
+    licy.plugin('test', function () {});
 
     licy.start('test');
     licy.start('test', spy);
@@ -176,9 +199,9 @@ test('start', {
 
   'should err on start attempt while starting': function () {
     var spy = sinon.spy();
-    licy.plugin('test', { start : function () {
+    licy.plugin('test', function () {
       licy.start('test', spy);
-    } });
+    });
 
     licy.start('test');
 
@@ -190,11 +213,11 @@ test('start', {
   },
 
 
-  'should not throw on start after stop': function () {
-    licy.plugin('test', { start : function () {} });
+  'should not throw on start after destroy': function () {
+    licy.plugin('test', function () {});
 
     licy.start('test');
-    licy.stop('test');
+    licy.destroy('test');
 
     assert.doesNotThrow(function () {
       licy.start('test');

@@ -42,59 +42,61 @@ test('destroy', {
     'Expected name to be string, but it was error'),
 
 
-  'should remove the plugin with the given name': function () {
-    licy.plugin('to.be.removed', { start : function () {} });
+  'should reset plugin with the given name': function () {
+    licy.plugin('to.be.removed', function () {});
+    licy.start('to.be.removed');
 
     licy.destroy('to.be.removed');
 
-    assert.equal('unknown', licy.status('to.be.removed'));
+    assert.equal('registered', licy.status('to.be.removed'));
   },
 
 
-  'should remove all plugins': function () {
-    licy.plugin('to.be.removed.x', { start : function () {} });
-    licy.plugin('to.be.removed.y', { start : function () {} });
+  'should reset all plugins': function () {
+    licy.plugin('to.be.removed.x', function () {});
+    licy.plugin('to.be.removed.y', function () {});
+    licy.start('to.be.removed.x');
+    licy.start('to.be.removed.y');
 
     licy.destroy('**');
 
-    assert.equal('unknown', licy.status('to.be.removed.x'));
-    assert.equal('unknown', licy.status('to.be.removed.y'));
+    assert.equal('registered', licy.status('to.be.removed.x'));
+    assert.equal('registered', licy.status('to.be.removed.y'));
   },
 
 
-  'should not remove other plugins': function () {
-    licy.plugin('to.be.removed.x', { start : function () {} });
-    licy.plugin('to.be.removed.y', { start : function () {} });
+  'should not reset other plugins': function () {
+    licy.plugin('to.be.removed.x', function () {});
+    licy.plugin('to.be.removed.y', function () {});
+    licy.start('to.be.removed.x');
+    licy.start('to.be.removed.y');
 
     licy.destroy('to.be.removed.x');
 
-    assert.equal('unknown', licy.status('to.be.removed.x'));
-    assert.equal('configured', licy.status('to.be.removed.y'));
+    assert.equal('registered', licy.status('to.be.removed.x'));
+    assert.equal('started', licy.status('to.be.removed.y'));
   },
 
 
-  'should unregister start function': function () {
-    licy.plugin('test', { start : function () {} });
-
+  'should allow to start plugin again': function () {
+    var spy = sinon.spy();
+    licy.plugin('test', spy);
     licy.start('test');
     licy.destroy('test');
+    spy.reset();
 
-    /*
-     * Once start throws because 'test' is unknown, change this to a try/catch
-     * and assert the correct exception is thrown.
-     */
-    assert.doesNotThrow(function () {
-      licy.start('test');
-    });
+    licy.start('test');
+
+    sinon.assert.calledOnce(spy);
   },
 
 
-  'should call config.destroy': function () {
+  'should emit destroy': function () {
     var spy = sinon.spy();
-    licy.plugin('test', {
-      start   : function () {},
-      destroy : spy
+    licy.plugin('test', function (test) {
+      test.on('destroy', spy);
     });
+    licy.start('test');
 
     licy.destroy('test');
 
@@ -102,25 +104,29 @@ test('destroy', {
   },
 
 
-  'should destroy plugin if config.destroy throws': function () {
-    licy.plugin('test', {
-      start   : function () {},
-      destroy : sinon.stub().throws(new Error('oups!'))
+  'should destroy plugin if destroy throws': function () {
+    licy.plugin('test', function (test) {
+      test.on('destroy', function () {
+        throw new Error('oups!');
+      });
     });
+    licy.start('test');
 
     try {
       licy.destroy('test');
     } catch (e) {}
 
-    assert.equal('unknown', licy.status('test'));
+    assert.equal('registered', licy.status('test'));
   },
 
 
-  'should throw if config.destroy throws': function () {
-    licy.plugin('test', {
-      start   : function () {},
-      destroy : sinon.stub().throws(new Error('oups!'))
+  'should throw if destroy throws': function () {
+    licy.plugin('test', function (test) {
+      test.on('destroy', function () {
+        throw new Error('oups!');
+      });
     });
+    licy.start('test');
 
     try {
       licy.destroy('test');
@@ -132,75 +138,13 @@ test('destroy', {
   },
 
 
-  'should invoke config.stop on running plugin': function () {
-    var spy = sinon.spy();
-    licy.plugin('test', {
-      start : function () {},
-      stop  : spy
-    });
-    licy.start('test');
-
-    licy.destroy('test');
-
-    sinon.assert.calledOnce(spy);
-  },
-
-
-  'should not invoke config.stop on not started plugin': function () {
-    var spy = sinon.spy();
-    licy.plugin('test', {
-      start : function () {},
-      stop  : spy
-    });
-
-    licy.destroy('test');
-
-    sinon.assert.notCalled(spy);
-  },
-
-
-  'should not invoke config.stop on stopped plugin': function () {
-    var spy = sinon.spy();
-    licy.plugin('test', {
-      start : function () {},
-      stop  : spy
-    });
-    licy.start('test');
-    licy.stop('test');
-    spy.reset();
-
-    licy.destroy('test');
-
-    sinon.assert.notCalled(spy);
-  },
-
-
-  'should not invoke config.destroy if config.stop does not complete':
-    function () {
-      var spy = sinon.spy();
-      licy.plugin('test', {
-        start   : function () {},
-        stop    : function (callback) {
-          // Not invoking the callback here.
-        },
-        destroy : spy
-      });
-      licy.start('test');
-
-      licy.destroy('test');
-
-      sinon.assert.notCalled(spy);
-    },
-
-
   'should invoke given callback on completion': function () {
     var spy = sinon.spy();
     var invoke;
-    licy.plugin('test', {
-      start : function () {},
-      stop  : function (callback) {
+    licy.plugin('test', function (test) {
+      test.on('destroy', function (callback) {
         invoke = callback;
-      }
+      });
     });
     licy.start('test');
 
@@ -209,6 +153,21 @@ test('destroy', {
     sinon.assert.notCalled(spy);
     invoke();
     sinon.assert.calledOnce(spy);
+  },
+
+
+  'should remove all listeners from view': function () {
+    var spy = sinon.spy();
+    licy.plugin('test', function (test) {
+      test.on('foo', spy);
+    });
+    licy.start('test');
+
+    licy.destroy('test');
+    licy.emit('test.foo');
+
+    sinon.assert.notCalled(spy);
   }
+
 
 });
