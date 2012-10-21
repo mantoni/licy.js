@@ -105,7 +105,8 @@ The following API is implemented on top:
 Registers a plugin with the given name, optional dependencies and start function. The start function will receive a hub.js view on the `licy` object (the licy event emitter scoped to the name of the plugin).
 
 #### `start(name[, callback])`
-Starts the plugin with the given name. This will invoke the `start` function of the plugin.
+Starts the plugin with the given name. This will invoke the start function of the plugin.
+
 The optional callback is invoked with `(err, plugin)` where plugin is the same object that was passed to the start function. If `*` was used in the plugin name, this is an array of plugins.
 
 #### `destroy(name[, callback])`
@@ -115,9 +116,23 @@ Destroy the plugin with the given name. This will emit the `destroy` event on th
 Requires a plugin. The callback is invoked with `(err, plugin)` where plugin is the same object that was passed to the start function. If `*` was used in the plugin name, this is an array of plugins.
 If the plugin is not running, it will be started.
 
+#### `restart(name[, callback])`
+Destroys and then starts the plugin with the given name. This will emit the `destroy` event on the plugin, remove all event handlers from it and then invoke the start function of the plugin.
+
+The optional callback is invoked with `(err, plugin)` where plugin is the same object that was passed to the start function. If `*` was used in the plugin name, this is an array of plugins.
+
+It is save to call restart on a plugin that is not running.
+
 #### `status(name)`
 Returns the status of the given plugin. This can be one of `registered`, `starting`, `started`, `destroying` or `unknown`.
-If a plugin was destroyed the status is `registered` again.
+
+ - `registered` means the plugin is known, but not started.
+ - `starting` means `start` was called for this plugin, but did not return yet.
+ - `started` means `start` that startup was completed successfully.
+ - `destroying` means the `destroy` event was fired, but did not return yet.
+ - `unknown` means that there is no plugin with the given name.
+
+Note that after a plugin was destroyed the status is `registered` again.
 
 
 ## Hacking
