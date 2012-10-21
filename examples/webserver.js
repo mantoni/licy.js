@@ -6,6 +6,9 @@
  * @license MIT
  *
  * Nodes webserver example sliced into some licy plugins.
+ * - Logs all events to the console.
+ * - The config dependency requires 1 second to start.
+ * - Closing the server takes 1 second.
  */
 'use strict';
 
@@ -21,7 +24,7 @@ licy.plugin('config', function (config) {
     // Deferred return value:
     setTimeout(function () {
       callback(null, 1337);
-    }, 500);
+    }, 1000);
   });
 });
 
@@ -44,20 +47,21 @@ licy.plugin('server', ['config', 'handler'], function (server, started) {
       console.log('Server running at http://localhost:' + port);
       started();
     });
-    server.once('destroy', function () {
+    server.on('destroy', function (destroyed) {
       s.close();
+      setTimeout(destroyed, 1000);
     });
   });
 
 });
 
 
+
 licy.start('server');
 
 process.on('SIGINT', function () {
-  console.log('Closing server');
-  licy.destroy('server', function (err) {
-    console.log(err ? err : 'Server closed.');
+  licy.destroy('**', function () {
+    console.log('All plugins destroyed.');
     process.exit();
   });
 });
