@@ -42,10 +42,6 @@ test('require', {
     'Expected name to be string, but it was number'),
 
 
-  'should throw if function is undefined': testIllegalArgs('test', undefined,
-    'Expected callback to be function, but it was undefined'),
-
-
   'should invoke start function from config': function () {
     var spy = sinon.spy();
     licy.plugin('test', spy);
@@ -58,15 +54,15 @@ test('require', {
 
   'should throw if start function throws': function () {
     var spy = sinon.spy();
-    licy.plugin('test', sinon.stub().throws(new Error('ouch')));
+    licy.plugin('test', function () { throw new Error('ouch'); });
 
-    licy.require('test', spy);
-
-    sinon.assert.calledOnce(spy);
-    sinon.assert.calledWithMatch(spy, {
-      name    : 'Error',
-      message : 'ouch'
-    });
+    try {
+      licy.require('test');
+      assert.fail('Exception expected');
+    } catch (e) {
+      assert.equal(e.name, 'Error');
+      assert.equal(e.message, 'ouch');
+    }
   },
 
 
@@ -112,7 +108,7 @@ test('require', {
   }),
 
 
-  'should pass error to require callback': function () {
+  'should pass error to callback': function () {
     var spy = sinon.spy();
     var err = new Error();
     licy.plugin('test', function () { throw err; });

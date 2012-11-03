@@ -1,6 +1,6 @@
 {
   "name"            : "licy",
-  "version"         : "0.2.1",
+  "version"         : "0.2.2",
   "description"     : "Asynchronous dependency and lifecycle management for Node and the browser",
   "keywords"        : ["lifecycle", "dependency", "node", "browser"],
   "author"          : "Maximilian Antoni (http://maxantoni.de)",

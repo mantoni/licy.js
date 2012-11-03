@@ -119,6 +119,42 @@ test('dependencies', {
       licy.start('test.*', spy);
 
       sinon.assert.calledWith(spy, null, [view]);
-    }
+    },
+
+
+  'should destroy dependant plugin': function () {
+    var spy = sinon.spy();
+    licy.plugin('required', function () {});
+    licy.plugin('test', ['required'], function (test) {
+      test.on('destroy', spy);
+    });
+
+    licy.start('test');
+    licy.destroy('required');
+
+    sinon.assert.calledOnce(spy);
+  },
+
+
+  'should wait with destory for dependant plugin': sinon.test(function () {
+    var spy = sinon.spy();
+    licy.plugin('required', function (required) {
+      required.on('destroy', spy);
+    });
+    licy.plugin('test', ['required'], function (test) {
+      test.on('destroy', function (callback) {
+        setTimeout(callback, 500);
+      });
+    });
+
+    licy.start('test');
+    licy.destroy('required');
+
+    sinon.assert.notCalled(spy);
+
+    this.clock.tick(500);
+
+    sinon.assert.calledOnce(spy);
+  })
 
 });
