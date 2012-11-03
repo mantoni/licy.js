@@ -78,7 +78,7 @@ All plugins communicate only via pub/sub with each other. This allows a plugin i
 
 #### Callbacks
 
-The lifecycle functions may declare a `callback` parameter. This makes this part of the lifecycle asynchronous.
+Any lifecycle function may declare a `callback` parameter to make it asynchronous.
 All depending plugins will have to wait until this callback is invoked.
 
 Licy uses node style callbacks. So wherever a callback can be used, the parameter list is `(err, value)`.
@@ -97,20 +97,22 @@ licy.emit('some.plugin.event', 123, 'args', function (err, value) {
 });
 ```
 
-Dependencies only need to be specified if a plugin cannot properly work without other plugins.
-
 The following API is implemented on top:
 
 #### `plugin(name[, dependencies], start)`
 Registers a plugin with the given name, optional dependencies and start function. The start function will receive a hub.js view on the `licy` object (the licy event emitter scoped to the name of the plugin).
 
+Dependencies only need to be specified if a plugin cannot properly work without other plugins, or if you want them to be started before your plugin. Otherwise dependencies can be `required` lazy as needed.
+
+If a dependency of a plugin is destroyed, the dependant plugin will be automatically destroyed first. This way it's save to destroy `**`.
+
 #### `start(name[, callback])`
-Starts the plugin with the given name. This will invoke the start function of the plugin.
+Starts the plugin with the given name. This calls `require` for all dependencies and invoke the start function of the plugin.
 
 The optional callback is invoked with `(err, plugin)` where plugin is the same object that was passed to the start function. If `*` was used in the plugin name, this is an array of plugins.
 
 #### `destroy(name[, callback])`
-Destroy the plugin with the given name. This will emit the `destroy` event on the plugin and remove all event handlers from it.
+Destroy the plugin with the given name. This will destroy all dependant plugins, emit the `destroy` event on the plugin and remove all event handlers from it.
 
 #### `require(name, callback)`
 Requires a plugin. The callback is invoked with `(err, plugin)` where plugin is the same object that was passed to the start function. If `*` was used in the plugin name, this is an array of plugins.
