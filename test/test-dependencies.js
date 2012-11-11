@@ -62,6 +62,23 @@ test('dependencies', {
   },
 
 
+  'should resolve wildcard dependencies': function () {
+    var spyA = sinon.spy();
+    var spyB = sinon.spy();
+    var spyC = sinon.spy();
+    licy.plugin('test.a', spyA);
+    licy.plugin('test.b', spyB);
+    licy.plugin('c', ['test.*'], spyC);
+
+    licy.start('c');
+
+    sinon.assert.calledOnce(spyA);
+    sinon.assert.calledOnce(spyB);
+    sinon.assert.calledOnce(spyC);
+    sinon.assert.callOrder(spyA, spyB, spyC);
+  },
+
+
   'should not start plugin if dependency does not return': function () {
     licy.plugin('required', function (hub, callback) {
       // Simply not invoking callback.
