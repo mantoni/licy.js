@@ -136,6 +136,12 @@ Returns the status of the given plugin. This can be one of `registered`, `starti
 
 Note that after a plugin was destroyed the status is `registered` again.
 
+#### `each(name, event[, arg1, arg2, ...][[, strategy], callback])`
+Requires the plugins matching the given name and emits an event with optional arguments on them.
+
+If a callback is provided, it will be invoked with `(err, result)` once all emit calls returned. The result depends on the strategy as described in the hub.js documentation. The default is LAST.
+
+Note that a callback must be provided when passing a strategy function or the strategy would be used as the callback.
 
 ## Hacking
 
