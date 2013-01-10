@@ -14,7 +14,7 @@ var hubjs   = require('hubjs');
 var licy    = require('../lib/licy');
 
 
-test('strategies', {
+test('static', {
 
 
   'exposes LAST': function () {
@@ -24,6 +24,16 @@ test('strategies', {
 
   'exposes CONCAT': function () {
     assert.strictEqual(licy.CONCAT, hubjs.CONCAT);
+  },
+
+
+  'exposes listen': function () {
+    assert.strictEqual(licy.listen, hubjs.listen);
+  },
+
+
+  'exposes View': function () {
+    assert.strictEqual(licy.View, hubjs.View);
   }
 
 
