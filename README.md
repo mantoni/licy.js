@@ -12,7 +12,7 @@ npm install licy
 
 ## Download for browsers
 
-Browser packages are here: https://github.com/mantoni/licy.js/downloads.
+Browser packages are here: http://maxantoni.de/licy.js/.
 
 ## Usage
 
