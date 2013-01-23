@@ -59,7 +59,7 @@ test('start', {
 
     try {
       licy.start('test');
-      assert.fail("Exception expected");
+      assert.fail('Exception expected');
     } catch (e) {
       assert.equal('Error', e.name);
       assert.equal('ouch', e.message);
@@ -74,7 +74,22 @@ test('start', {
 
     try {
       licy.start('test');
-      assert.fail("Exception expected");
+      assert.fail('Exception expected');
+    } catch (e) {
+      assert.equal('Error', e.name);
+      assert.equal('ouch', e.message);
+    }
+  },
+
+
+  'should err if start function with callback throws': function () {
+    licy.plugin('test', function (test, callback) {
+      throw new Error('ouch');
+    });
+
+    try {
+      licy.start('test');
+      assert.fail('Exception expected');
     } catch (e) {
       assert.equal('Error', e.name);
       assert.equal('ouch', e.message);
