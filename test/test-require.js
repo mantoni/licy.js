@@ -61,7 +61,7 @@ test('require', {
       assert.fail('Exception expected');
     } catch (e) {
       assert.equal(e.name, 'Error');
-      assert.equal(e.message, 'ouch');
+      assert.equal(e.message, 'Failed to start plugin "test": ouch');
     }
   },
 
@@ -77,7 +77,7 @@ test('require', {
     sinon.assert.calledOnce(spy);
     sinon.assert.calledWithMatch(spy, {
       name    : 'Error',
-      message : 'ouch'
+      message : 'Failed to start plugin "test": ouch'
     });
   },
 
@@ -195,17 +195,20 @@ test('require', {
   },
 
 
-  'should not attempt to start again if currently starting': function () {
-    var callCount = 0;
-    licy.plugin('test', function (test, callback) { callCount++; });
-    licy.start('test');
+  'should not attempt to start again if currently starting': sinon.test(
+    function () {
+      // Fake timer avoids waiting for the timeout.
+      var callCount = 0;
+      licy.plugin('test', function (test, callback) { callCount++; });
+      licy.start('test');
 
-    assert.doesNotThrow(function () {
-      licy.require('test', function () {});
-    });
+      assert.doesNotThrow(function () {
+        licy.require('test', function () {});
+      });
 
-    assert.equal(callCount, 1);
-  },
+      assert.equal(callCount, 1);
+    }
+  ),
 
 
   'should yield view once started': function () {

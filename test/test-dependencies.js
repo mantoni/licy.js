@@ -79,17 +79,20 @@ test('dependencies', {
   },
 
 
-  'should not start plugin if dependency does not return': function () {
-    licy.plugin('required', function (hub, callback) {
-      // Simply not invoking callback.
-    });
-    var spy = sinon.spy();
-    licy.plugin('test', ['required'], spy);
+  'should not start plugin if dependency does not return': sinon.test(
+    function () {
+      // Fake clock avoids waiting for the timeout.
+      licy.plugin('required', function (hub, callback) {
+        // Simply not invoking callback.
+      });
+      var spy = sinon.spy();
+      licy.plugin('test', ['required'], spy);
 
-    licy.start('test');
+      licy.start('test');
 
-    sinon.assert.notCalled(spy);
-  },
+      sinon.assert.notCalled(spy);
+    }
+  ),
 
 
   'should not start plugin if dependency throws': function () {
@@ -104,7 +107,8 @@ test('dependencies', {
       assert.fail('Exception expected');
     } catch (e) {
       assert.equal(e.name, 'TypeError');
-      assert.equal(e.message, 'd`oh!');
+      assert.equal(e.message, 'Failed to start plugin "test": ' +
+          'Failed to start plugin "required": d`oh!');
     }
     sinon.assert.notCalled(spy);
   },

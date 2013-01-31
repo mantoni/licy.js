@@ -9,6 +9,7 @@
 
 var test    = require('utest');
 var assert  = require('assert');
+var sinon   = require('sinon');
 
 var licy    = require('../lib/licy');
 
@@ -69,16 +70,19 @@ test('status', {
   },
 
 
-  'should return "starting" while waiting for start to return': function () {
-    licy.plugin('test', function (test, callback) {
-      // Just not calling callback.
-    });
+  'should return "starting" while waiting for start to return': sinon.test(
+    function () {
+      // Fake timers avoid waiting for the timeout.
+      licy.plugin('test', function (test, callback) {
+        // Just not calling callback.
+      });
 
-    licy.start('test');
-    var status = licy.status('test');
+      licy.start('test');
+      var status = licy.status('test');
 
-    assert.equal(status, 'starting');
-  },
+      assert.equal(status, 'starting');
+    }
+  ),
 
 
   'should return "started" for started plugins': function () {

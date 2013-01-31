@@ -62,7 +62,7 @@ test('start', {
       assert.fail('Exception expected');
     } catch (e) {
       assert.equal('Error', e.name);
-      assert.equal('ouch', e.message);
+      assert.equal('ouch', e.message.substring(e.message.length - 4));
     }
   },
 
@@ -77,7 +77,7 @@ test('start', {
       assert.fail('Exception expected');
     } catch (e) {
       assert.equal('Error', e.name);
-      assert.equal('ouch', e.message);
+      assert.equal('ouch', e.message.substring(e.message.length - 4));
     }
   },
 
@@ -92,7 +92,7 @@ test('start', {
       assert.fail('Exception expected');
     } catch (e) {
       assert.equal('Error', e.name);
-      assert.equal('ouch', e.message);
+      assert.equal('ouch', e.message.substring(e.message.length - 4));
     }
   },
 
@@ -207,7 +207,7 @@ test('start', {
     sinon.assert.calledOnce(spy);
     sinon.assert.calledWith(spy, sinon.match({
       name    : 'Error',
-      message : 'Plugin "test" already started'
+      message : sinon.match('Plugin "test" already started')
     }));
   },
 
@@ -223,7 +223,7 @@ test('start', {
     sinon.assert.calledOnce(spy);
     sinon.assert.calledWith(spy, sinon.match({
       name    : 'Error',
-      message : 'Plugin "test" already started'
+      message : sinon.match('Plugin "test" already starting')
     }));
   },
 
