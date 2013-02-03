@@ -156,7 +156,7 @@ test('each', {
     });
     var spy = sinon.spy();
 
-    licy.each('*', 'test', licy.CONCAT, spy);
+    licy.each('*', 'test', licy.options({ allResults : true}), spy);
 
     sinon.assert.calledOnce(spy);
     sinon.assert.calledWith(spy, null, [1, 2]);
