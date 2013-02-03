@@ -77,7 +77,8 @@ test('require', {
   },
 
 
-  'should not start if destroy does not return': function () {
+  'should not start if destroy does not return': sinon.test(function () {
+    // Using sinon.test with a fake clock to avoid waiting for a timeout.
     var callCount = 0;
     licy.plugin('test', function (test) {
       callCount++;
@@ -91,23 +92,26 @@ test('require', {
     licy.restart('test');
 
     assert.equal(callCount, 1);
-  },
+  }),
 
 
-  'should not return if second start does not return': function () {
-    var spy = sinon.spy();
-    var callCount = 0;
-    licy.plugin('test', function (test, callback) {
-      if (callCount++ === 0) {
-        callback();
-      }
-    });
-    licy.start('test');
+  'should not return if second start does not return': sinon.test(
+    function () {
+      // Using sinon.test with a fake clock to avoid waiting for a timeout.
+      var spy = sinon.spy();
+      var callCount = 0;
+      licy.plugin('test', function (test, callback) {
+        if (callCount++ === 0) {
+          callback();
+        }
+      });
+      licy.start('test');
 
-    licy.restart('test', spy);
+      licy.restart('test', spy);
 
-    sinon.assert.notCalled(spy);
-  },
+      sinon.assert.notCalled(spy);
+    }
+  ),
 
 
   'should pass null and created view to start callback': function () {
