@@ -190,6 +190,28 @@ test('destroy', {
   },
 
 
+  'invokes destroy after slow before listener yields': sinon.test(
+    function () {
+      var spy = sinon.spy();
+      licy.plugin('test', function (test) {
+        test.on('destroy', spy);
+      });
+      licy.before('test.destroy', function () {
+        setTimeout(this.callback(), 100);
+      });
+      licy.start('test');
+
+      licy.destroy('test');
+
+      sinon.assert.notCalled(spy);
+
+      this.clock.tick(100);
+
+      sinon.assert.calledOnce(spy);
+    }
+  ),
+
+
   'should not invoke destroy twice': function () {
     var callCount = 0;
     licy.plugin('test', function (test) {
@@ -215,7 +237,7 @@ test('destroy', {
         // Not invoking callback here.
       });
     });
-    licy.before('test.destroy', function test(callback) {
+    licy.before('test.destroy', function (callback) {
       setTimeout(callback, 100);
     });
     licy.start('test');

@@ -137,7 +137,47 @@ test('require', {
     licy.restart('test.*', spy);
 
     sinon.assert.calledWith(spy, null, views);
-  }
+  },
 
+
+  'queues event while destroying': function () {
+    var spy     = sinon.spy();
+    var destroy = sinon.spy(function (callback) {});
+    licy.plugin('test', function (plugin) {
+      plugin.on('foo', spy);
+      plugin.on('destroy', destroy);
+    });
+    licy.start('test');
+
+    licy.restart('test');
+    licy.emit('test.foo');
+
+    sinon.assert.notCalled(spy);
+
+    destroy.invokeCallback();
+
+    sinon.assert.calledOnce(spy);
+  },
+
+
+  'queues event while starting': function () {
+    var spy = sinon.spy();
+    var started;
+    licy.plugin('test', function (plugin, callback) {
+      plugin.on('foo', spy);
+      started = callback;
+    });
+    licy.start('test');
+    started();
+
+    licy.restart('test');
+    licy.emit('test.foo');
+
+    sinon.assert.notCalled(spy);
+
+    started();
+
+    sinon.assert.calledOnce(spy);
+  }
 
 });
