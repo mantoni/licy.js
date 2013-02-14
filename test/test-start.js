@@ -134,26 +134,13 @@ test('start', {
   },
 
 
-  'should pass null and created view to start callback': function () {
+  'should pass null to start callback': function () {
     var spy = sinon.spy();
-    var view;
-    licy.plugin('test', function (test) { view = test; });
+    licy.plugin('test', function () {});
 
     licy.start('test', spy);
 
-    sinon.assert.calledWith(spy, null, view);
-  },
-
-
-  'should pass array of views for wildcard starts': function () {
-    var spy = sinon.spy();
-    var views = [];
-    licy.plugin('test.1', function (test) { views.push(test); });
-    licy.plugin('test.2', function (test) { views.push(test); });
-
-    licy.start('test.*', spy);
-
-    sinon.assert.calledWith(spy, null, views);
+    sinon.assert.calledWith(spy, null);
   },
 
 
@@ -166,20 +153,6 @@ test('start', {
     licy.start('test.*', spy);
 
     assert.notStrictEqual(view1, view2);
-  },
-
-
-  'should not mess up array of values with return values': function () {
-    var spy = sinon.spy();
-    var view;
-    licy.plugin('test.run', function (test) {
-      view = test;
-      return 666;
-    });
-
-    licy.start('test.*', spy);
-
-    sinon.assert.calledWith(spy, null, [view]);
   },
 
 
