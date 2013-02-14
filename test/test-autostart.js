@@ -116,16 +116,6 @@ test('autostart', {
   },
 
 
-  'checking the status does not start the plugin': function () {
-    var spy = sinon.spy();
-    licy.plugin('test', spy);
-
-    licy.status('test');
-
-    sinon.assert.notCalled(spy);
-  },
-
-
   'queues additional events until the plugin is started': function () {
     var spy = sinon.spy();
     var initialized;

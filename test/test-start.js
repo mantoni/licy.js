@@ -223,7 +223,7 @@ test('start', {
     sinon.assert.calledOnce(spy);
     sinon.assert.calledWith(spy, sinon.match({
       name    : 'Error',
-      message : sinon.match('Plugin "test" already starting')
+      message : sinon.match('Plugin "test" already started')
     }));
   },
 

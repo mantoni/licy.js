@@ -43,16 +43,22 @@ test('destroy', {
 
 
   'should reset plugin with the given name': function () {
+    var spy = sinon.spy();
+    licy.on('licy.to.be.removed.destroyed', spy);
     licy.plugin('to.be.removed', function () {});
     licy.start('to.be.removed');
 
     licy.destroy('to.be.removed');
 
-    assert.equal('registered', licy.status('to.be.removed'));
+    sinon.assert.calledOnce(spy);
   },
 
 
   'should reset all plugins': function () {
+    var spyX = sinon.spy();
+    var spyY = sinon.spy();
+    licy.on('licy.to.be.removed.x.destroyed', spyX);
+    licy.on('licy.to.be.removed.y.destroyed', spyY);
     licy.plugin('to.be.removed.x', function () {});
     licy.plugin('to.be.removed.y', function () {});
     licy.start('to.be.removed.x');
@@ -60,12 +66,16 @@ test('destroy', {
 
     licy.destroy('**');
 
-    assert.equal('registered', licy.status('to.be.removed.x'));
-    assert.equal('registered', licy.status('to.be.removed.y'));
+    sinon.assert.calledOnce(spyX);
+    sinon.assert.calledOnce(spyY);
   },
 
 
   'should not reset other plugins': function () {
+    var spyX = sinon.spy();
+    var spyY = sinon.spy();
+    licy.on('licy.to.be.removed.x.destroyed', spyX);
+    licy.on('licy.to.be.removed.y.destroyed', spyY);
     licy.plugin('to.be.removed.x', function () {});
     licy.plugin('to.be.removed.y', function () {});
     licy.start('to.be.removed.x');
@@ -73,8 +83,8 @@ test('destroy', {
 
     licy.destroy('to.be.removed.x');
 
-    assert.equal('registered', licy.status('to.be.removed.x'));
-    assert.equal('started', licy.status('to.be.removed.y'));
+    sinon.assert.calledOnce(spyX);
+    sinon.assert.notCalled(spyY);
   },
 
 
@@ -105,6 +115,8 @@ test('destroy', {
 
 
   'should destroy plugin if destroy throws': function () {
+    var spy = sinon.spy();
+    licy.on('licy.test.destroyed', spy);
     licy.plugin('test', function (test) {
       test.on('destroy', function () {
         throw new Error('oups!');
@@ -116,7 +128,7 @@ test('destroy', {
       licy.destroy('test');
     } catch (e) {}
 
-    assert.equal('registered', licy.status('test'));
+    sinon.assert.calledOnce(spy);
   },
 
 
