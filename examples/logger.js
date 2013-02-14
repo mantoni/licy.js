@@ -1,7 +1,7 @@
 /**
  * licy.js
  *
- * Copyright (c) 2012 Maximilian Antoni <mail@maxantoni.de>
+ * Copyright (c) 2012-2013 Maximilian Antoni <mail@maxantoni.de>
  *
  * @license MIT
  */
@@ -9,8 +9,8 @@
 
 var licy = require('../lib/licy');
 
-licy.on('**', function () {
-  if (this.event !== 'newListener') {
+licy.before('**', function () {
+  if (this.event !== 'newListener' && this.event !== 'removeListener') {
     console.log('[licy] ' + this.event);
   }
 });

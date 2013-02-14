@@ -1,54 +1,59 @@
 /**
  * licy.js
  *
- * Copyright (c) 2012 Maximilian Antoni <mail@maxantoni.de>
+ * Copyright (c) 2012-2013 Maximilian Antoni <mail@maxantoni.de>
  *
  * @license MIT
  *
  * Nodes webserver example sliced into some licy plugins.
  * - Logs all events to the console.
- * - The config dependency requires 1 second to start.
- * - Closing the server takes 1 second.
+ * - The config dependency starts after 2 seconds.
+ * - Closing the server returns after 1 second.
  */
 'use strict';
 
 require('./logger');
 
 var licy = require('../lib/licy');
-var http = require('http');
 
 
+licy.plugin('config', function (plugin) {
 
-licy.plugin('config', function (config) {
-  config.on('port', function (callback) {
+  plugin.on('port', function (callback) {
     // Deferred return value:
     setTimeout(function () {
       callback(null, 1337);
-    }, 1000);
+    }, 2000);
   });
+
 });
 
-licy.plugin('handler', function (handler) {
-  handler.on('request', function (req, res) {
+
+licy.plugin('http.request', function (plugin) {
+
+  plugin.on('received', function (req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Hello World\n');
+    res.end('Hello Licy\n');
   });
+
 });
 
 
 
-licy.plugin('server', ['config', 'handler'], function (server, started) {
+licy.plugin('http.server', function (plugin, started) {
 
   licy.emit('config.port', function (err, port) {
-    var s = http.createServer(function (req, res) {
-      licy.emit('handler.request', req, res);
+    var http   = require('http');
+    var server = http.createServer(function (req, res) {
+      licy.emit('http.request.received', req, res);
     });
-    s.listen(port, function () {
+    server.listen(port, function () {
       console.log('Server running at http://localhost:' + port);
       started();
     });
-    server.on('destroy', function (destroyed) {
-      s.close();
+
+    plugin.once('destroy', function (destroyed) {
+      server.close();
       setTimeout(destroyed, 1000);
     });
   });
@@ -57,7 +62,7 @@ licy.plugin('server', ['config', 'handler'], function (server, started) {
 
 
 
-licy.start('server');
+licy.start('http.server');
 
 process.on('SIGINT', function () {
   licy.destroy('**', function () {
