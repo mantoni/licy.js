@@ -156,7 +156,7 @@ test('start', {
   },
 
 
-  'should not invoke config.start on second start attempt': function () {
+  'should not invoke start on second start attempt': function () {
     var spy = sinon.spy();
     licy.plugin('test', spy);
     licy.start('test');
@@ -210,7 +210,29 @@ test('start', {
     assert.doesNotThrow(function () {
       licy.start('test');
     });
-  }
+  },
 
+
+  'should start all plugins': function () {
+    var a = sinon.spy();
+    var b = sinon.spy();
+    licy.plugin('a', a);
+    licy.plugin('b.c', b);
+
+    licy.start('**');
+
+    sinon.assert.calledOnce(a);
+    sinon.assert.calledOnce(b);
+  },
+
+
+  'should not invoke unrelated start listener': function () {
+    var spy = sinon.spy();
+    licy.on('unrelated.start', spy);
+
+    licy.start('**');
+
+    sinon.assert.notCalled(spy);
+  }
 
 });

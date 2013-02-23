@@ -71,6 +71,16 @@ test('destroy', {
   },
 
 
+  'should not invoke unrelated destroy listener': function () {
+    var spy = sinon.spy();
+    licy.on('unrelated.destroy', spy);
+
+    licy.destroy('**');
+
+    sinon.assert.notCalled(spy);
+  },
+
+
   'should not reset other plugins': function () {
     var spyX = sinon.spy();
     var spyY = sinon.spy();
