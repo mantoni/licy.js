@@ -2,6 +2,8 @@
 
 Asynchronous dependency and lifecycle management for Node and the browser.
 
+Repository: https://github.com/mantoni/licy.js
+
 [![Build Status](https://secure.travis-ci.org/mantoni/licy.js.png?branch=master)](http://travis-ci.org/mantoni/licy.js)
 
 ## Install on Node
@@ -145,8 +147,9 @@ Note that a callback must be provided when passing a strategy function or the st
 
 ## Contributing
 
-If you'd like to hack licy.js here is how to get started:
+If you'd like to contribute to licy.js here is how to get started:
 
+ - Fork the project on GitHub.
  - `npm install` will setup everything you need.
  - `make` lints the code with JSLint and runs all unit tests.
  - Use can also `make lint` or `make test` individually.
