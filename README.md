@@ -30,7 +30,7 @@ Examples can be found in the [examples directory](https://github.com/mantoni/lic
 ## API
 
 #### `licy`
-Is a [hub.js](http://mantoni.github.com/hub.js/) event emitter instance.
+Is a [hub.js](http://github.com/mantoni/hub.js) event emitter instance.
 
 All communication between the plugins happens via the `licy` event emitter.
 
