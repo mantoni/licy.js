@@ -143,7 +143,7 @@ If a callback is provided, it will be invoked with `(err, result)` once all emit
 
 Note that a callback must be provided when passing a strategy function or the strategy would be used as the callback.
 
-## Hacking
+## Contributing
 
 If you'd like to hack licy.js here is how to get started:
 
