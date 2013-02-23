@@ -163,6 +163,16 @@ test('require', {
     started();
 
     sinon.assert.calledOnce(spy);
+  },
+
+
+  'should not invoke unrelated start listener': function () {
+    var spy = sinon.spy();
+    licy.on('unrelated.start', spy);
+
+    licy.restart('**');
+
+    sinon.assert.notCalled(spy);
   }
 
 });

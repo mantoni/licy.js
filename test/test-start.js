@@ -201,6 +201,20 @@ test('start', {
   },
 
 
+  'should throw on second start attempt without callback': function () {
+    licy.plugin('test', function () {});
+    licy.start('test');
+
+    try {
+      licy.start('test');
+      assert.fail();
+    } catch (e) {
+      assert.equal(e.name, 'Error');
+      assert(e.message.indexOf('Plugin "test" already started') !== -1);
+    }
+  },
+
+
   'should not throw on start after destroy': function () {
     licy.plugin('test', function () {});
 
@@ -233,6 +247,49 @@ test('start', {
     licy.start('**');
 
     sinon.assert.notCalled(spy);
+  },
+
+
+  'should not throw if already auto started': function () {
+    licy.plugin('a', function () {});
+    licy.emit('a.foo');
+
+    assert.doesNotThrow(function () {
+      licy.start('a');
+    });
+  },
+
+
+  'should not invoke start function if already auto started': function () {
+    var spy = sinon.spy();
+    licy.plugin('a', spy);
+    licy.emit('a.foo');
+
+    licy.start('a');
+
+    sinon.assert.calledOnce(spy);
+  },
+
+
+  'should throw when starting again after restart': function () {
+    licy.plugin('test', function () {});
+    licy.emit('test.foo'); // autostart
+    licy.restart('test');
+
+    assert.throws(function () {
+      licy.start('test');
+    });
+  },
+
+
+  'should throw when starting twice after auto start': function () {
+    licy.plugin('test', function () {});
+    licy.emit('test.foo');
+
+    licy.start('test'); // tolerated
+    assert.throws(function () {
+      licy.start('test'); // not tolerated
+    });
   }
 
 });
