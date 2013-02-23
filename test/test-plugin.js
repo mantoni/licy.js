@@ -72,6 +72,33 @@ test('plugin', {
 
 
   'should throw if start function is object': testIllegalArgs('test', {},
-    'Expected start to be function, but it was object')
+    'Expected start to be function, but it was object'),
+
+
+  'throws if called after start was called': function () {
+    licy.plugin('foo', function () {});
+    licy.start('foo');
+
+    try {
+      licy.plugin('test', function () {});
+      assert.fail();
+    } catch (e) {
+      assert.equal(e.name, 'Error');
+      assert.equal(e.message, 'Cannot register plugins after start');
+    }
+  },
+
+
+  'throws if called after startAll was called': function () {
+    licy.startAll();
+
+    try {
+      licy.plugin('test', function () {});
+      assert.fail();
+    } catch (e) {
+      assert.equal(e.name, 'Error');
+      assert.equal(e.message, 'Cannot register plugins after start');
+    }
+  }
 
 });
