@@ -24,60 +24,80 @@ Browser packages are here: http://maxantoni.de/licy.js/.
 
 ## Usage
 
-Some examples can be found in the [examples directory](https://github.com/mantoni/licy.js/tree/master/examples).
+Examples can be found in the [examples directory](https://github.com/mantoni/licy.js/tree/master/examples).
 
 
 ## API
 
-The `licy` object is a [hub.js](http://mantoni.github.com/hub.js/) instance (a powerful event emitter).
+#### `licy`
+Is a [hub.js](http://mantoni.github.com/hub.js/) event emitter instance.
 
-All plugins are registered on the same event emitter. Events can be emitted on all started plugin without configuring any dependencies:
+All communication between the plugins happens via the `licy` event emitter.
 
 ```js
-licy.emit('some.plugin.event', 123, 'args', function (err, value) {
+licy.emit('foo.bar', 42, function (err, result) {
   // ...
 });
 ```
 
-The following API is implemented on top:
+Please refer to [the hub.js API documentation](https://github.com/mantoni/hub.js/wiki/Hub-API) for the full list of supported features.
 
-#### `plugin(name, start)`
+#### `licy.plugin(name, start)`
 Registers a plugin with the given name and start function.
 
-The start function has the parameters `(plugin[, callack])`. The `plugin` is a hub.js view on the `licy` object, scoped to the name of the plugin.
+The start function takes the arguments `(plugin[, callack])`. The `plugin` is a [hub.js view](https://github.com/mantoni/hub.js/wiki/Views) on the `licy` object, scoped to the name of the plugin.
 
 If a callback is given, all events for this plugin will be queued until the callback was invoked. If the first argument to the callback is non-null, it is considered an error.
 
-#### `startAll([callback])`
+```js
+licy.plugin('server', function (plugin) {
+  plugin.on('listen', function (port) {
+    // ...
+  });
+});
+```
+
+#### `licy.plugins(config)`
+Registers multiple plugins. Supposed to be used with `require` to define plugins in their own modules and register them all in one go.
+
+```js
+licy.plugins({
+  'server': require('./server'),
+  'router': require('./router'),
+  // ...
+});
+```
+
+#### `licy.startAll([callback])`
 Starts all registered plugins.
 
 The optional callback receives an error as the only argument.
 
-#### `destroyAll([callback])`
+#### `licy.destroyAll([callback])`
 Destroys all registered plugins.
 
 The optional callback receives an error as the only argument.
 
-#### `start(name[, callback])`
+#### `licy.start(name[, callback])`
 Starts the plugin with the given name. This will invoke the plugins start function.
 
 The optional callback receives an error as the only argument.
 
 If an event is emitted on `licy` that starts with `name`, the plugin will be started automatically. All events are queued until the plugin is started.
 
-#### `destroy(name[, callback])`
+#### `licy.destroy(name[, callback])`
 Destroy the plugin with the given name. This will emit the `destroy` event on the plugin and remove all event handlers from it.
 
 The optional callback receives an error as the only argument.
 
-#### `restart(name[, callback])`
+#### `licy.restart(name[, callback])`
 Destroys and then starts the plugin with the given name. This will emit the `destroy` event on the plugin, remove all event handlers from it and then invoke the start function of the plugin again.
 
 The optional callback receives an error as the only argument.
 
 Any events that are emitted for this this plugin during the restart will be queued until the restart was successful.
 
-#### `reset()`
+#### `licy.reset()`
 Resets the `licy` singleton to the initial state. All listeners will be removed, all plugins unregistered and all states reset. This will not destroy the plugins or emit any events.
 
 Use this in the `tearDown` function of your unit tests.
