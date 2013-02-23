@@ -17,7 +17,7 @@ var licy    = require('../lib/licy');
 test('startall', {
 
   after: function () {
-    licy.removeAllListeners();
+    licy.reset();
   },
 
 

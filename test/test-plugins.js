@@ -30,7 +30,7 @@ function testIllegalArgs(plugins, message) {
 test('plugins', {
 
   after: function () {
-    licy.removeAllListeners();
+    licy.reset();
   },
 
 

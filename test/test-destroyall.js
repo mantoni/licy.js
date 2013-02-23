@@ -17,7 +17,7 @@ var licy    = require('../lib/licy');
 test('destroyall', {
 
   after: function () {
-    licy.removeAllListeners();
+    licy.reset();
   },
 
 
@@ -64,6 +64,42 @@ test('destroyall', {
     onDestroy.invokeCallback();
 
     sinon.assert.calledOnce(callback);
+  },
+
+
+  'does not emit destroy events again on second call': function () {
+    licy.plugin('test', function () {});
+    licy.start('test');
+    licy.destroyAll();
+    var spy = sinon.spy();
+    licy.on('test.destroy', spy);
+
+    licy.destroyAll();
+
+    sinon.assert.notCalled(spy);
+  },
+
+
+  'collects errors and yields an ErrorList': function () {
+    licy.plugin('a', function (plugin) {
+      plugin.on('destroy', function () { throw new Error('ey'); });
+    });
+    licy.plugin('b', function (plugin) {
+      plugin.on('destroy', function () { throw new Error('oh'); });
+    });
+    licy.startAll();
+    var spy = sinon.spy();
+
+    licy.destroyAll(spy);
+
+    sinon.assert.calledOnce(spy);
+    sinon.assert.calledWithMatch(spy, {
+      name   : 'ErrorList',
+      errors : [
+        sinon.match.has('message', 'ey'),
+        sinon.match.has('message', 'oh')
+      ]
+    });
   }
 
 });

@@ -1,7 +1,7 @@
 /**
  * licy.js
  *
- * Copyright (c) 2012 Maximilian Antoni <mail@maxantoni.de>
+ * Copyright (c) 2012-2013 Maximilian Antoni <mail@maxantoni.de>
  *
  * @license MIT
  */
@@ -29,7 +29,7 @@ function testIllegalArgs(name, start, message) {
 test('plugin', {
 
   after: function () {
-    licy.removeAllListeners();
+    licy.reset();
   },
 
 
