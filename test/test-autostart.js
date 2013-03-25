@@ -58,6 +58,64 @@ test('autostart', {
   },
 
 
+  'emit event on plugin started by wildcard emit': function () {
+    var spy = sinon.spy();
+    licy.plugin('some.test', function (plugin) {
+      plugin.on('foo', spy);
+    });
+
+    licy.emit('some.*.foo');
+
+    sinon.assert.calledOnce(spy);
+  },
+
+
+  'emits event on plugin after start yielded': function () {
+    var spy   = sinon.spy();
+    var start = sinon.spy(function (plugin, callback) {
+      plugin.on('foo', spy);
+    });
+    licy.plugin('test', start);
+
+    licy.emit('test.foo');
+
+    sinon.assert.notCalled(spy);
+
+    start.invokeCallback();
+
+    sinon.assert.calledOnce(spy);
+  },
+
+
+  'emits event on plugins after wildcard start yielded': function () {
+    var spyA   = sinon.spy();
+    var startA = sinon.spy(function (plugin, callback) {
+      plugin.on('foo', spyA);
+    });
+    var spyB   = sinon.spy();
+    var startB = sinon.spy(function (plugin, callback) {
+      plugin.on('foo', spyB);
+    });
+    licy.plugin('test.a', startA);
+    licy.plugin('test.b', startB);
+
+    licy.emit('test.*.foo');
+
+    sinon.assert.notCalled(spyA);
+    sinon.assert.notCalled(spyB);
+
+    startA.invokeCallback();
+
+    sinon.assert.notCalled(spyA);
+    sinon.assert.notCalled(spyB);
+
+    startB.invokeCallback();
+
+    sinon.assert.calledOnce(spyA);
+    sinon.assert.calledOnce(spyB);
+  },
+
+
   'passes arguments to listener on plugin': function () {
     var spy = sinon.spy();
     licy.plugin('test', function (plugin) {
@@ -169,6 +227,43 @@ test('autostart', {
     licy.start('test');
 
     licy.emit('test.foo');
+
+    sinon.assert.calledOnce(before);
+    sinon.assert.calledOnce(on);
+    sinon.assert.calledOnce(after);
+  },
+
+
+  'invokes all types of matchers on plugin once started': function () {
+    var before = sinon.spy();
+    var on     = sinon.spy();
+    var after  = sinon.spy();
+    licy.plugin('test', function (plugin) {
+      plugin.before('foo.*', before);
+      plugin.on('foo.*', on);
+      plugin.after('foo.*', after);
+    });
+
+    licy.emit('test.foo.*');
+
+    sinon.assert.notCalled(before); // not supported for the time being
+    sinon.assert.calledOnce(on);
+    sinon.assert.calledOnce(after);
+  },
+
+
+  'invokes all types of matchers on plugin if already started': function () {
+    var before = sinon.spy();
+    var on     = sinon.spy();
+    var after  = sinon.spy();
+    licy.plugin('test', function (plugin) {
+      plugin.before('foo.*', before);
+      plugin.on('foo.*', on);
+      plugin.after('foo.*', after);
+    });
+    licy.start('test');
+
+    licy.emit('test.foo.*');
 
     sinon.assert.calledOnce(before);
     sinon.assert.calledOnce(on);
