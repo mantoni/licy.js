@@ -196,6 +196,22 @@ test('destroy', {
   }),
 
 
+  'emits events in destroy listener': function () {
+    var spy = sinon.spy();
+    licy.plugin('test', function (test) {
+      test.on('destroy', function () {
+        test.emit('foo');
+      });
+    });
+    licy.start('test');
+    licy.on('test.foo', spy);
+
+    licy.destroy('test');
+
+    sinon.assert.calledOnce(spy);
+  },
+
+
   'should not throw if not started': function () {
     licy.plugin('test', function () {});
 
