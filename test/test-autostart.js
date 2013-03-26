@@ -116,6 +116,42 @@ test('autostart', {
   },
 
 
+  'does not queue emitted events in sync start': function () {
+    var started  = sinon.spy();
+    var required = sinon.spy();
+    licy.on('test.required', required);
+    licy.plugin('test', function (plugin) {
+      plugin.emit('required');
+      started();
+    });
+
+    licy.emit('test.foo');
+
+    sinon.assert.calledOnce(started);
+    sinon.assert.calledOnce(required);
+    sinon.assert.callOrder(required, started);
+  },
+
+
+  'does not queue emitted events in async start': function () {
+    var started  = sinon.spy();
+    var required = sinon.spy(function (callback) {});
+    licy.on('test.required', required);
+    licy.plugin('test', function (plugin, callback) {
+      plugin.emit('required', callback);
+    });
+
+    licy.emit('test.foo', started);
+
+    sinon.assert.notCalled(started);
+    sinon.assert.calledOnce(required);
+
+    required.invokeCallback();
+
+    sinon.assert.calledOnce(started);
+  },
+
+
   'passes arguments to listener on plugin': function () {
     var spy = sinon.spy();
     licy.plugin('test', function (plugin) {
