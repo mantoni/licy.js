@@ -1,6 +1,6 @@
 # licy.js
 
-Asynchronous dependency and lifecycle management for Node and the browser.
+Asynchronous lifecycle management for Node and the browser.
 
 Repository: https://github.com/mantoni/licy.js
 
@@ -16,11 +16,13 @@ npm install licy
 
 Browser packages are here: http://maxantoni.de/licy.js/.
 
-## Goals
+## Features
 
 - Simple lifecycles (starting / stopping things)
 - Transparent restarts of individual plugins
-- All communication is event driven and asynchronous
+- Communication between plugins is event driven and asynchronous
+- Auto-start plugins as required
+- Queue events until plugin startup has finished
 
 ## Usage
 
@@ -95,7 +97,7 @@ Destroys and then starts the plugin with the given name. This will emit the `des
 
 The optional callback receives an error as the only argument.
 
-Any events that are emitted for this this plugin during the restart will be queued until the restart was successful.
+Any events that are emitted for this plugin during the restart will be queued until the restart was successful.
 
 #### `licy.reset()`
 Resets the `licy` singleton to the initial state. All listeners will be removed, all plugins unregistered and all states reset. This will not destroy the plugins or emit any events.
@@ -110,9 +112,9 @@ If you'd like to contribute to licy.js here is how to get started:
  - Fork the project on GitHub.
  - `npm install` will setup everything you need.
  - `make` lints the code with JSLint and runs all unit tests.
- - Use can also `make lint` or `make test` individually.
+ - You can also `make lint` or `make test` individually.
 
-Running the test cases in a browser instead of Node requires [nomo.js](https://github.com/mantoni/nomo.js).
+Running the test cases in a browser requires [nomo.js](https://github.com/mantoni/nomo.js).
 
  - Run `npm install -g nomo`
  - Run `nomo server` from within the project directory.
