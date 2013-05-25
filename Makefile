@@ -1,26 +1,41 @@
 SHELL := /bin/bash
+PATH  := node_modules/.bin:${PATH}
 
-default: lint test
+default: lint test phantom browser
+
+name    = "licy"
+tests   = `ls ./test/test-*`
+html    = test/all.html
+main    = $(shell node -p "require('./package.json').main")
+version = $(shell node -p "require('./package.json').version")
+folder  = ${name}-${version}
+
 
 lint:
-	@node_modules/.bin/autolint --once
+	@autolint --once
 
 .PHONY: test
 test:
 	@node -e "require('urun')('test');"
 
-compile: lint test
-	@nomo
-	@node_modules/.bin/uglifyjs licy.js > licy.min.js
+phantom:
+	@echo "Browserify tests | phantomic"
+	@browserify ./test/fixture/phantom.js ${tests} | phantomic
 
-version := $(shell node -e "console.log(JSON.parse(require('fs').readFileSync('package.json')).version)")
-folder := licy-${version}
+browser:
+	@echo "Consolify tests > file://`pwd`/${html}"
+	@consolify ${tests} > ${html}
+
+compile: lint test phantom browser
+	@browserify ${main} -s ${name} -o ${name}.js
+	@uglifyjs ${name}.js > ${name}.min.js
 
 package: compile
 	@echo "Creating package ${folder}.tgz"
 	@mkdir ${folder}
-	@mv licy.js licy.min.js ${folder}
-	@cp LICENSE README.md ${folder}
+	@mv ${name}.js ${name}.min.js ${folder}
+	@cp LICENSE README.md CHANGES.md ${folder}
+	@cp test/all.html ${folder}/tests.html
 	@tar -czf ${folder}.tgz ${folder}
 	@rm -r ${folder}
 

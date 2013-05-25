@@ -1,6 +1,6 @@
 {
   "name"            : "licy",
-  "version"         : "0.6.0",
+  "version"         : "0.7.0",
   "description"     : "Asynchronous dependency and lifecycle management for Node and the browser",
   "keywords"        : ["lifecycle", "dependency", "node", "browser"],
   "author"          : "Maximilian Antoni (http://maxantoni.de)",
@@ -10,7 +10,7 @@
     "node"          : ">=0.6"
   },
   "scripts"         : {
-    "test"          : "make"
+    "test"          : "make test"
   },
   "repository"      : {
     "type"          : "git",
@@ -20,17 +20,14 @@
     "hubjs"         : "~0.11.0"
   },
   "devDependencies" : {
-    "utest"         : "~0.0.6",
+    "utest"         : "~0.0.8",
     "urun"          : "~0.0.6",
     "sinon"         : "~1.6.0",
     "uglify-js"     : "~1.2.6",
-    "autolint"      : "~1.0.4"
+    "autolint"      : "~1.0.4",
+    "phantomic"     : "~0.2.0",
+    "browserify"    : ">=2.13 <3",
+    "consolify"     : "~0.3.0"
   },
-  "files"           : ["lib", "README.md", "LICENSE"],
-  "nomo"            : {
-    "name"          : "licy.js",
-    "require"       : "lib/licy",
-    "exportTarget"  : "window.licy",
-    "fileName"      : "licy.js"
-  }
+  "files"           : ["lib", "README.md", "LICENSE", "CHANGES"]
 }
