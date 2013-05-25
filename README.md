@@ -1,10 +1,9 @@
-# licy.js
+# licy.js [![Build Status](https://secure.travis-ci.org/mantoni/licy.js.png?branch=master)](http://travis-ci.org/mantoni/licy.js) [![NPM version](https://badge.fury.io/js/licy.png)](http://badge.fury.io/js/licy)
 
-Asynchronous lifecycle management for Node and the browser.
+Module lifecycle management for Node and the browser.
 
 Repository: https://github.com/mantoni/licy.js
 
-[![Build Status](https://secure.travis-ci.org/mantoni/licy.js.png?branch=master)](http://travis-ci.org/mantoni/licy.js)
 
 ## Install on Node
 
@@ -18,11 +17,11 @@ Browser packages are here: http://maxantoni.de/licy.js/.
 
 ## Features
 
-- Simple lifecycles (starting / stopping things)
-- Transparent restarts of individual plugins
-- Communication between plugins is event driven and asynchronous
+- Simple lifecycles (start & destroy)
+- Transparent restarts
+- Plugins use events to communicate
 - Auto-start plugins as required
-- Queue events until plugin startup has finished
+- Auto-queue events until plugin started
 
 ## Usage
 
