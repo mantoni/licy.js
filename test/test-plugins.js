@@ -14,19 +14,6 @@ var sinon  = require('sinon');
 var licy   = require('../lib/licy');
 
 
-function testIllegalArgs(plugins, message) {
-  return function () {
-    try {
-      licy.plugins(plugins);
-      assert.fail('Expection expected.');
-    } catch (e) {
-      assert.equal(e.name, 'TypeError');
-      assert.equal(e.message, message);
-    }
-  };
-}
-
-
 test('plugins', {
 
   after: function () {
@@ -51,25 +38,23 @@ test('plugins', {
 
 
   'throws if no arguments are given': function () {
-    try {
+    assert.throws(function () {
       licy.plugins();
-      assert.fail('Expection expected.');
-    } catch (e) {
-      assert.equal(e.name, 'TypeError');
-      assert.equal(e.message, 'No arguments given.');
-    }
+    }, /TypeError/);
   },
 
 
-  'throws if plugins is null': testIllegalArgs(null,
-    'Expected plugins to be object, but it was null'),
+  'throws if plugins is string': function () {
+    assert.throws(function () {
+      licy.plugins('');
+    }, /TypeError/);
+  },
 
 
-  'throws if plugins is string': testIllegalArgs('',
-    'Expected plugins to be object, but it was string'),
-
-
-  'throws if plugins is array': testIllegalArgs([],
-    'Expected plugins to be object, but it was array')
+  'throws if plugins is function': function () {
+    assert.throws(function () {
+      licy.plugins(function () {});
+    }, /TypeError/);
+  }
 
 });

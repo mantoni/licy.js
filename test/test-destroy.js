@@ -34,14 +34,6 @@ test('destroy', {
   },
 
 
-  'should throw if name is null': testIllegalArgs(null,
-    'Expected name to be string, but it was null'),
-
-
-  'should throw if name is error': testIllegalArgs(new Error(),
-    'Expected name to be string, but it was error'),
-
-
   'should reset plugin with the given name': function () {
     var spy = sinon.spy();
     licy.on('licy.to.be.removed.destroyed', spy);

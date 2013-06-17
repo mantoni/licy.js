@@ -14,33 +14,11 @@ var sinon   = require('sinon');
 var licy    = require('../lib/licy');
 
 
-function testIllegalArgs(name, message) {
-  return function () {
-    try {
-      licy.restart(name);
-      assert.fail('Expection expected.');
-    } catch (e) {
-      assert.equal(e.name, 'TypeError');
-      assert.equal(e.message, message);
-    }
-  };
-}
-
-
 test('require', {
 
   after: function () {
     licy.reset();
   },
-
-
-  'should throw if name is null': testIllegalArgs(null,
-    'Expected name to be string, but it was null'),
-
-
-  'should throw if name is number': testIllegalArgs(0,
-    'Expected name to be string, but it was number'),
-
 
   'should destroy given plugin': function () {
     var spy = sinon.spy();
