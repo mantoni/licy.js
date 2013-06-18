@@ -1,5 +1,10 @@
 # Changes
 
+## v0.8.0
+
+- Updated hub.js to 0.13.0
+- Removed `options` and `Options`
+
 ## v0.7.0
 
 - Updated hub.js to 0.12.0

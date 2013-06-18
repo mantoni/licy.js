@@ -16,7 +16,6 @@ var licy    = require('../lib/licy');
 
 test('static', {
 
-
   'exposes listen': function () {
     assert.strictEqual(licy.listen, hubjs.listen);
   },
@@ -24,17 +23,6 @@ test('static', {
 
   'exposes View': function () {
     assert.strictEqual(licy.View, hubjs.View);
-  },
-
-
-  'exposes options': function () {
-    assert.strictEqual(licy.options, hubjs.options);
-  },
-
-
-  'exposes Options': function () {
-    assert.strictEqual(licy.Options, hubjs.Options);
   }
-
 
 });
