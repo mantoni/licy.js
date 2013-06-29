@@ -1,5 +1,11 @@
 # Changes
 
+## v0.9.0
+
+- Licy is not a singleton anymore. Instead, a factory function is exposed that
+  creates a new licy instance on each call.
+- Removed `reset` since it's obsolete.
+
 ## v0.8.0
 
 - Updated hub.js to 0.13.0

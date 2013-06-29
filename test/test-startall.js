@@ -1,4 +1,4 @@
-/**
+/*
  * licy.js
  *
  * Copyright (c) 2013 Maximilian Antoni <mail@maxantoni.de>
@@ -16,18 +16,18 @@ var licy    = require('../lib/licy');
 
 test('startall', {
 
-  after: function () {
-    licy.reset();
+  before: function () {
+    this.licy = licy();
   },
 
 
   'starts all plugins': function () {
     var a = sinon.spy();
     var b = sinon.spy();
-    licy.plugin('a', a);
-    licy.plugin('b.c', b);
+    this.licy.plugin('a', a);
+    this.licy.plugin('b.c', b);
 
-    licy.startAll();
+    this.licy.startAll();
 
     sinon.assert.calledOnce(a);
     sinon.assert.calledOnce(b);
@@ -36,9 +36,9 @@ test('startall', {
 
   'does not call unrelated start listener': function () {
     var spy = sinon.spy();
-    licy.on('unrelated.start', spy);
+    this.licy.on('unrelated.start', spy);
 
-    licy.startAll();
+    this.licy.startAll();
 
     sinon.assert.notCalled(spy);
   },
@@ -47,9 +47,9 @@ test('startall', {
   'invokes given callback after start yields': function () {
     var callback = sinon.spy();
     var start    = sinon.spy(function (plugin, callback) {});
-    licy.plugin('test', start);
+    this.licy.plugin('test', start);
 
-    licy.startAll(callback);
+    this.licy.startAll(callback);
 
     sinon.assert.notCalled(callback);
 

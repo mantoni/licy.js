@@ -1,4 +1,4 @@
-/**
+/*
  * licy.js
  *
  * Copyright (c) 2012-2013 Maximilian Antoni <mail@maxantoni.de>
@@ -16,28 +16,28 @@ var licy    = require('../lib/licy');
 
 test('start', {
 
-  after: function () {
-    licy.reset();
+  before: function () {
+    this.licy = licy();
   },
 
 
   'should invoke start function': function () {
     var spy = sinon.spy();
-    licy.plugin('test', spy);
+    this.licy.plugin('test', spy);
 
-    licy.start('test');
+    this.licy.start('test');
 
     sinon.assert.calledOnce(spy);
   },
 
 
   'should throw if start function throws': function () {
-    licy.plugin('test', function () {
+    this.licy.plugin('test', function () {
       throw new Error('ouch');
     });
 
     try {
-      licy.start('test');
+      this.licy.start('test');
       assert.fail('Exception expected');
     } catch (e) {
       assert.equal('Error', e.name);
@@ -47,12 +47,12 @@ test('start', {
 
 
   'should err if start function errs': function () {
-    licy.plugin('test', function (test, callback) {
+    this.licy.plugin('test', function (test, callback) {
       callback(new Error('ouch'));
     });
 
     try {
-      licy.start('test');
+      this.licy.start('test');
       assert.fail('Exception expected');
     } catch (e) {
       assert.equal('Error', e.name);
@@ -62,12 +62,12 @@ test('start', {
 
 
   'should err if start function with callback throws': function () {
-    licy.plugin('test', function (test, callback) {
+    this.licy.plugin('test', function (test, callback) {
       throw new Error('ouch');
     });
 
     try {
-      licy.start('test');
+      this.licy.start('test');
       assert.fail('Exception expected');
     } catch (e) {
       assert.equal('Error', e.name);
@@ -79,9 +79,9 @@ test('start', {
   'should invoke a given callback after starting the plugin': function () {
     var spy1 = sinon.spy();
     var spy2 = sinon.spy();
-    licy.plugin('test', spy1);
+    this.licy.plugin('test', spy1);
 
-    licy.start('test', spy2);
+    this.licy.start('test', spy2);
 
     sinon.assert.calledOnce(spy2);
     sinon.assert.callOrder(spy1, spy2);
@@ -89,12 +89,12 @@ test('start', {
 
 
   'should wait for the start callback to return': sinon.test(function () {
-    licy.plugin('test', function (test, callback) {
+    this.licy.plugin('test', function (test, callback) {
       setTimeout(callback, 10);
     });
     var spy = sinon.spy();
 
-    licy.start('test', spy);
+    this.licy.start('test', spy);
 
     sinon.assert.notCalled(spy);
     this.clock.tick(10);
@@ -105,9 +105,9 @@ test('start', {
   'should pass error to start callback': function () {
     var spy = sinon.spy();
     var err = new Error();
-    licy.plugin('test', function () { throw err; });
+    this.licy.plugin('test', function () { throw err; });
 
-    licy.start('test', spy);
+    this.licy.start('test', spy);
 
     sinon.assert.calledWith(spy, err);
   },
@@ -115,9 +115,9 @@ test('start', {
 
   'should pass null to start callback': function () {
     var spy = sinon.spy();
-    licy.plugin('test', function () {});
+    this.licy.plugin('test', function () {});
 
-    licy.start('test', spy);
+    this.licy.start('test', spy);
 
     sinon.assert.calledWith(spy, null);
   },
@@ -126,10 +126,10 @@ test('start', {
   'should create different views for each wildcard start': function () {
     var spy = sinon.spy();
     var view1, view2;
-    licy.plugin('test.1', function (test) { view1 = test; });
-    licy.plugin('test.2', function (test) { view2 = test; });
+    this.licy.plugin('test.1', function (test) { view1 = test; });
+    this.licy.plugin('test.2', function (test) { view2 = test; });
 
-    licy.start('test.*', spy);
+    this.licy.start('test.*', spy);
 
     assert.notStrictEqual(view1, view2);
   },
@@ -137,12 +137,12 @@ test('start', {
 
   'should not invoke start on second start attempt': function () {
     var spy = sinon.spy();
-    licy.plugin('test', spy);
-    licy.start('test');
+    this.licy.plugin('test', spy);
+    this.licy.start('test');
     spy.reset();
 
     try {
-      licy.start('test');
+      this.licy.start('test');
     } catch (e) {}
 
     sinon.assert.notCalled(spy);
@@ -151,10 +151,10 @@ test('start', {
 
   'should err on second start attempt': function () {
     var spy = sinon.spy();
-    licy.plugin('test', function () {});
+    this.licy.plugin('test', function () {});
 
-    licy.start('test');
-    licy.start('test', spy);
+    this.licy.start('test');
+    this.licy.start('test', spy);
 
     sinon.assert.calledOnce(spy);
     sinon.assert.calledWith(spy, sinon.match({
@@ -165,6 +165,7 @@ test('start', {
 
 
   'should err on start attempt while starting': function () {
+    var licy = this.licy;
     var spy = sinon.spy();
     licy.plugin('test', function () {
       licy.start('test', spy);
@@ -181,11 +182,11 @@ test('start', {
 
 
   'should throw on second start attempt without callback': function () {
-    licy.plugin('test', function () {});
-    licy.start('test');
+    this.licy.plugin('test', function () {});
+    this.licy.start('test');
 
     try {
-      licy.start('test');
+      this.licy.start('test');
       assert.fail();
     } catch (e) {
       assert.equal(e.name, 'Error');
@@ -195,6 +196,7 @@ test('start', {
 
 
   'should not throw on start after destroy': function () {
+    var licy = this.licy;
     licy.plugin('test', function () {});
 
     licy.start('test');
@@ -209,10 +211,10 @@ test('start', {
   'should start all plugins': function () {
     var a = sinon.spy();
     var b = sinon.spy();
-    licy.plugin('a', a);
-    licy.plugin('b.c', b);
+    this.licy.plugin('a', a);
+    this.licy.plugin('b.c', b);
 
-    licy.start('**');
+    this.licy.start('**');
 
     sinon.assert.calledOnce(a);
     sinon.assert.calledOnce(b);
@@ -221,15 +223,16 @@ test('start', {
 
   'should not invoke unrelated start listener': function () {
     var spy = sinon.spy();
-    licy.on('unrelated.start', spy);
+    this.licy.on('unrelated.start', spy);
 
-    licy.start('**');
+    this.licy.start('**');
 
     sinon.assert.notCalled(spy);
   },
 
 
   'should not throw if already auto started': function () {
+    var licy = this.licy;
     licy.plugin('a', function () {});
     licy.emit('a.foo');
 
@@ -241,16 +244,17 @@ test('start', {
 
   'should not invoke start function if already auto started': function () {
     var spy = sinon.spy();
-    licy.plugin('a', spy);
-    licy.emit('a.foo');
+    this.licy.plugin('a', spy);
+    this.licy.emit('a.foo');
 
-    licy.start('a');
+    this.licy.start('a');
 
     sinon.assert.calledOnce(spy);
   },
 
 
   'should throw when starting again after restart': function () {
+    var licy = this.licy;
     licy.plugin('test', function () {});
     licy.emit('test.foo'); // autostart
     licy.restart('test');
@@ -262,6 +266,7 @@ test('start', {
 
 
   'should throw when starting twice after auto start': function () {
+    var licy = this.licy;
     licy.plugin('test', function () {});
     licy.emit('test.foo');
 

@@ -31,7 +31,7 @@ Examples can be found in the [examples directory](https://github.com/mantoni/lic
 ## API
 
 #### `licy`
-Is a [hub.js](http://github.com/mantoni/hub.js) event emitter instance.
+Creates and returns a licy instance which is a [hub.js](http://github.com/mantoni/hub.js) event emitter instance.
 
 All communication between the plugins happens via the `licy` event emitter.
 
@@ -97,11 +97,6 @@ Destroys and then starts the plugin with the given name. This will emit the `des
 The optional callback receives an error as the only argument.
 
 Any events that are emitted for this plugin during the restart will be queued until the restart was successful.
-
-#### `licy.reset()`
-Resets the `licy` singleton to the initial state. All listeners will be removed, all plugins unregistered and all states reset. This will not destroy the plugins or emit any events.
-
-Use this in the `tearDown` function of your unit tests.
 
 
 ## Contributing

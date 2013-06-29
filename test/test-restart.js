@@ -1,4 +1,4 @@
-/**
+/*
  * licy.js
  *
  * Copyright (c) 2012-2013 Maximilian Antoni <mail@maxantoni.de>
@@ -16,18 +16,18 @@ var licy    = require('../lib/licy');
 
 test('require', {
 
-  after: function () {
-    licy.reset();
+  before: function () {
+    this.licy = licy();
   },
 
   'should destroy given plugin': function () {
     var spy = sinon.spy();
-    licy.plugin('test', function (test) {
+    this.licy.plugin('test', function (test) {
       test.on('destroy', spy);
     });
-    licy.start('test');
+    this.licy.start('test');
 
-    licy.restart('test');
+    this.licy.restart('test');
 
     sinon.assert.calledOnce(spy);
   },
@@ -35,10 +35,10 @@ test('require', {
 
   'should invoke a given callback': function () {
     var spy = sinon.spy();
-    licy.plugin('test', function () {});
-    licy.start('test');
+    this.licy.plugin('test', function () {});
+    this.licy.start('test');
 
-    licy.restart('test', spy);
+    this.licy.restart('test', spy);
 
     sinon.assert.calledOnce(spy);
   },
@@ -46,10 +46,10 @@ test('require', {
 
   'should start plugin again': function () {
     var spy = sinon.spy();
-    licy.plugin('test', spy);
-    licy.start('test');
+    this.licy.plugin('test', spy);
+    this.licy.start('test');
 
-    licy.restart('test');
+    this.licy.restart('test');
 
     sinon.assert.calledTwice(spy);
   },
@@ -58,16 +58,16 @@ test('require', {
   'should not start if destroy does not return': sinon.test(function () {
     // Using sinon.test with a fake clock to avoid waiting for a timeout.
     var callCount = 0;
-    licy.plugin('test', function (test) {
+    this.licy.plugin('test', function (test) {
       callCount++;
       test.on('destroy', function () {
         this.callback();
         // Not invoking callback.
       });
     });
-    licy.start('test');
+    this.licy.start('test');
 
-    licy.restart('test');
+    this.licy.restart('test');
 
     assert.equal(callCount, 1);
   }),
@@ -78,14 +78,14 @@ test('require', {
       // Using sinon.test with a fake clock to avoid waiting for a timeout.
       var spy = sinon.spy();
       var callCount = 0;
-      licy.plugin('test', function (test, callback) {
+      this.licy.plugin('test', function (test, callback) {
         if (callCount++ === 0) {
           callback();
         }
       });
-      licy.start('test');
+      this.licy.start('test');
 
-      licy.restart('test', spy);
+      this.licy.restart('test', spy);
 
       sinon.assert.notCalled(spy);
     }
@@ -94,10 +94,10 @@ test('require', {
 
   'should pass null to start callback': function () {
     var spy = sinon.spy();
-    licy.plugin('test', function () {});
-    licy.start('test');
+    this.licy.plugin('test', function () {});
+    this.licy.start('test');
 
-    licy.restart('test', spy);
+    this.licy.restart('test', spy);
 
     sinon.assert.calledWith(spy, null);
   },
@@ -106,14 +106,14 @@ test('require', {
   'queues event while destroying': function () {
     var spy     = sinon.spy();
     var destroy = sinon.spy(function (callback) {});
-    licy.plugin('test', function (plugin) {
+    this.licy.plugin('test', function (plugin) {
       plugin.on('foo', spy);
       plugin.on('destroy', destroy);
     });
-    licy.start('test');
+    this.licy.start('test');
 
-    licy.restart('test');
-    licy.emit('test.foo');
+    this.licy.restart('test');
+    this.licy.emit('test.foo');
 
     sinon.assert.notCalled(spy);
 
@@ -126,15 +126,15 @@ test('require', {
   'queues event while starting': function () {
     var spy = sinon.spy();
     var started;
-    licy.plugin('test', function (plugin, callback) {
+    this.licy.plugin('test', function (plugin, callback) {
       plugin.on('foo', spy);
       started = callback;
     });
-    licy.start('test');
+    this.licy.start('test');
     started();
 
-    licy.restart('test');
-    licy.emit('test.foo');
+    this.licy.restart('test');
+    this.licy.emit('test.foo');
 
     sinon.assert.notCalled(spy);
 
@@ -146,9 +146,9 @@ test('require', {
 
   'should not invoke unrelated start listener': function () {
     var spy = sinon.spy();
-    licy.on('unrelated.start', spy);
+    this.licy.on('unrelated.start', spy);
 
-    licy.restart('**');
+    this.licy.restart('**');
 
     sinon.assert.notCalled(spy);
   }

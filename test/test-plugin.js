@@ -1,4 +1,4 @@
-/**
+/*
  * licy.js
  *
  * Copyright (c) 2012-2013 Maximilian Antoni <mail@maxantoni.de>
@@ -15,12 +15,14 @@ var licy    = require('../lib/licy');
 
 test('plugin', {
 
-  after: function () {
-    licy.reset();
+  before: function () {
+    this.licy = licy();
   },
 
 
   'should throw if no arguments are given': function () {
+    var licy = this.licy;
+
     assert.throws(function () {
       licy.plugin();
     }, /TypeError/);
@@ -28,23 +30,27 @@ test('plugin', {
 
 
   'should throw if no start function was given': function () {
+    var licy = this.licy;
+
     assert.throws(function () {
       licy.plugin('some.plugin');
     }, /TypeError/);
   },
 
   'should throw if start function is object': function () {
+    var licy = this.licy;
+
     assert.throws(function () {
       licy.plugin('some.plugin', {});
     }, /TypeError/);
   },
 
   'throws if called after start was called': function () {
-    licy.plugin('foo', function () {});
-    licy.start('foo');
+    this.licy.plugin('foo', function () {});
+    this.licy.start('foo');
 
     try {
-      licy.plugin('test', function () {});
+      this.licy.plugin('test', function () {});
       assert.fail();
     } catch (e) {
       assert.equal(e.name, 'Error');
@@ -54,10 +60,10 @@ test('plugin', {
 
 
   'throws if called after startAll was called': function () {
-    licy.startAll();
+    this.licy.startAll();
 
     try {
-      licy.plugin('test', function () {});
+      this.licy.plugin('test', function () {});
       assert.fail();
     } catch (e) {
       assert.equal(e.name, 'Error');

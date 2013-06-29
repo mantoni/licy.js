@@ -1,4 +1,4 @@
-/**
+/*
  * licy.js
  *
  * Copyright (c) 2012-2013 Maximilian Antoni <mail@maxantoni.de>
@@ -17,7 +17,7 @@ var licy    = require('../lib/licy');
 function testIllegalArgs(name, message) {
   return function () {
     try {
-      licy.destroy(name);
+      this.licy.destroy(name);
       assert.fail('Expection expected.');
     } catch (e) {
       assert.equal(e.name, 'TypeError');
@@ -29,18 +29,18 @@ function testIllegalArgs(name, message) {
 
 test('destroy', {
 
-  after: function () {
-    licy.reset();
+  before: function () {
+    this.licy = licy();
   },
 
 
   'should reset plugin with the given name': function () {
     var spy = sinon.spy();
-    licy.on('licy.to.be.removed.destroyed', spy);
-    licy.plugin('to.be.removed', function () {});
-    licy.start('to.be.removed');
+    this.licy.on('licy.to.be.removed.destroyed', spy);
+    this.licy.plugin('to.be.removed', function () {});
+    this.licy.start('to.be.removed');
 
-    licy.destroy('to.be.removed');
+    this.licy.destroy('to.be.removed');
 
     sinon.assert.calledOnce(spy);
   },
@@ -49,14 +49,14 @@ test('destroy', {
   'should reset all plugins': function () {
     var spyX = sinon.spy();
     var spyY = sinon.spy();
-    licy.on('licy.to.be.removed.x.destroyed', spyX);
-    licy.on('licy.to.be.removed.y.destroyed', spyY);
-    licy.plugin('to.be.removed.x', function () {});
-    licy.plugin('to.be.removed.y', function () {});
-    licy.start('to.be.removed.x');
-    licy.start('to.be.removed.y');
+    this.licy.on('licy.to.be.removed.x.destroyed', spyX);
+    this.licy.on('licy.to.be.removed.y.destroyed', spyY);
+    this.licy.plugin('to.be.removed.x', function () {});
+    this.licy.plugin('to.be.removed.y', function () {});
+    this.licy.start('to.be.removed.x');
+    this.licy.start('to.be.removed.y');
 
-    licy.destroy('**');
+    this.licy.destroy('**');
 
     sinon.assert.calledOnce(spyX);
     sinon.assert.calledOnce(spyY);
@@ -65,9 +65,9 @@ test('destroy', {
 
   'should not invoke unrelated destroy listener': function () {
     var spy = sinon.spy();
-    licy.on('unrelated.destroy', spy);
+    this.licy.on('unrelated.destroy', spy);
 
-    licy.destroy('**');
+    this.licy.destroy('**');
 
     sinon.assert.notCalled(spy);
   },
@@ -76,14 +76,14 @@ test('destroy', {
   'should not reset other plugins': function () {
     var spyX = sinon.spy();
     var spyY = sinon.spy();
-    licy.on('licy.to.be.removed.x.destroyed', spyX);
-    licy.on('licy.to.be.removed.y.destroyed', spyY);
-    licy.plugin('to.be.removed.x', function () {});
-    licy.plugin('to.be.removed.y', function () {});
-    licy.start('to.be.removed.x');
-    licy.start('to.be.removed.y');
+    this.licy.on('licy.to.be.removed.x.destroyed', spyX);
+    this.licy.on('licy.to.be.removed.y.destroyed', spyY);
+    this.licy.plugin('to.be.removed.x', function () {});
+    this.licy.plugin('to.be.removed.y', function () {});
+    this.licy.start('to.be.removed.x');
+    this.licy.start('to.be.removed.y');
 
-    licy.destroy('to.be.removed.x');
+    this.licy.destroy('to.be.removed.x');
 
     sinon.assert.calledOnce(spyX);
     sinon.assert.notCalled(spyY);
@@ -92,12 +92,12 @@ test('destroy', {
 
   'should allow to start plugin again': function () {
     var spy = sinon.spy();
-    licy.plugin('test', spy);
-    licy.start('test');
-    licy.destroy('test');
+    this.licy.plugin('test', spy);
+    this.licy.start('test');
+    this.licy.destroy('test');
     spy.reset();
 
-    licy.start('test');
+    this.licy.start('test');
 
     sinon.assert.calledOnce(spy);
   },
@@ -105,12 +105,12 @@ test('destroy', {
 
   'should emit destroy': function () {
     var spy = sinon.spy();
-    licy.plugin('test', function (test) {
+    this.licy.plugin('test', function (test) {
       test.on('destroy', spy);
     });
-    licy.start('test');
+    this.licy.start('test');
 
-    licy.destroy('test');
+    this.licy.destroy('test');
 
     sinon.assert.calledOnce(spy);
   },
@@ -118,16 +118,16 @@ test('destroy', {
 
   'should destroy plugin if destroy throws': function () {
     var spy = sinon.spy();
-    licy.on('licy.test.destroyed', spy);
-    licy.plugin('test', function (test) {
+    this.licy.on('licy.test.destroyed', spy);
+    this.licy.plugin('test', function (test) {
       test.on('destroy', function () {
         throw new Error('oups!');
       });
     });
-    licy.start('test');
+    this.licy.start('test');
 
     try {
-      licy.destroy('test');
+      this.licy.destroy('test');
     } catch (e) {}
 
     sinon.assert.calledOnce(spy);
@@ -135,15 +135,15 @@ test('destroy', {
 
 
   'should throw if destroy throws': function () {
-    licy.plugin('test', function (test) {
+    this.licy.plugin('test', function (test) {
       test.on('destroy', function () {
         throw new Error('oups!');
       });
     });
-    licy.start('test');
+    this.licy.start('test');
 
     try {
-      licy.destroy('test');
+      this.licy.destroy('test');
       assert.fail('Exception expected');
     } catch (e) {
       assert.equal('Error', e.name);
@@ -155,14 +155,14 @@ test('destroy', {
   'should invoke given callback on completion': function () {
     var spy = sinon.spy();
     var invoke;
-    licy.plugin('test', function (test) {
+    this.licy.plugin('test', function (test) {
       test.on('destroy', function (callback) {
         invoke = callback;
       });
     });
-    licy.start('test');
+    this.licy.start('test');
 
-    licy.destroy('test', spy);
+    this.licy.destroy('test', spy);
 
     sinon.assert.notCalled(spy);
     invoke();
@@ -173,15 +173,15 @@ test('destroy', {
   'should remove all listeners from view': sinon.test(function () {
     var spy = sinon.spy();
     var started;
-    licy.plugin('test', function (test, callback) {
+    this.licy.plugin('test', function (test, callback) {
       test.on('foo', spy);
       started = callback;
     });
-    licy.start('test');
+    this.licy.start('test');
     started();
 
-    licy.destroy('test');
-    licy.emit('test.foo');
+    this.licy.destroy('test');
+    this.licy.emit('test.foo');
     // Not invoking 'started' to prevent autostart
 
     sinon.assert.notCalled(spy);
@@ -190,21 +190,22 @@ test('destroy', {
 
   'emits events in destroy listener': function () {
     var spy = sinon.spy();
-    licy.plugin('test', function (test) {
+    this.licy.plugin('test', function (test) {
       test.on('destroy', function () {
         test.emit('foo');
       });
     });
-    licy.start('test');
-    licy.on('test.foo', spy);
+    this.licy.start('test');
+    this.licy.on('test.foo', spy);
 
-    licy.destroy('test');
+    this.licy.destroy('test');
 
     sinon.assert.calledOnce(spy);
   },
 
 
   'should not throw if not started': function () {
+    var licy = this.licy;
     licy.plugin('test', function () {});
 
     assert.doesNotThrow(function () {
@@ -214,6 +215,7 @@ test('destroy', {
 
 
   'should not throw if already destroyed': function () {
+    var licy = this.licy;
     licy.plugin('test', function () {});
     licy.start('test');
     licy.destroy('test');
@@ -227,15 +229,15 @@ test('destroy', {
   'invokes destroy after slow before listener yields': sinon.test(
     function () {
       var spy = sinon.spy();
-      licy.plugin('test', function (test) {
+      this.licy.plugin('test', function (test) {
         test.on('destroy', spy);
       });
-      licy.onceBefore('test.destroy', function () {
+      this.licy.onceBefore('test.destroy', function () {
         setTimeout(this.callback(), 100);
       });
-      licy.start('test');
+      this.licy.start('test');
 
-      licy.destroy('test');
+      this.licy.destroy('test');
 
       sinon.assert.notCalled(spy);
 
@@ -248,9 +250,9 @@ test('destroy', {
 
   'should not start plugin': function () {
     var spy = sinon.spy();
-    licy.plugin('test', spy);
+    this.licy.plugin('test', spy);
 
-    licy.destroy('test');
+    this.licy.destroy('test');
 
     sinon.assert.notCalled(spy);
   },
@@ -258,16 +260,16 @@ test('destroy', {
 
   'should not invoke destroy twice': sinon.test(function () {
     var callCount = 0;
-    licy.plugin('test', function (test) {
+    this.licy.plugin('test', function (test) {
       test.on('destroy', function (callback) {
         callCount++;
         // Not invoking callback here.
       });
     });
-    licy.start('test');
+    this.licy.start('test');
 
-    licy.destroy('test');
-    licy.destroy('test');
+    this.licy.destroy('test');
+    this.licy.destroy('test');
 
     assert.equal(callCount, 1);
   }),
@@ -275,19 +277,19 @@ test('destroy', {
 
   'should not invoke destroy twice - slow before': sinon.test(function () {
     var callCount = 0;
-    licy.plugin('test', function (test) {
+    this.licy.plugin('test', function (test) {
       test.on('destroy', function (callback) {
         callCount++;
         // Not invoking callback here.
       });
     });
-    licy.onceBefore('test.destroy', function (callback) {
+    this.licy.onceBefore('test.destroy', function (callback) {
       setTimeout(callback, 100);
     });
-    licy.start('test');
+    this.licy.start('test');
 
-    licy.destroy('test', function () {});
-    licy.destroy('test', function (err) { if (err) { throw err; } });
+    this.licy.destroy('test', function () {});
+    this.licy.destroy('test', function (err) { if (err) { throw err; } });
     this.clock.tick(100);
 
     assert.equal(callCount, 1);

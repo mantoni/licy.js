@@ -1,4 +1,4 @@
-/**
+/*
  * licy.js
  *
  * Copyright (c) 2013 Maximilian Antoni <mail@maxantoni.de>
@@ -16,16 +16,16 @@ var licy   = require('../lib/licy');
 
 test('autostart', {
 
-  after: function () {
-    licy.reset();
+  before: function () {
+    this.licy = licy();
   },
 
 
   'starts plugin if event is triggered': function () {
     var spy = sinon.spy();
-    licy.plugin('test', spy);
+    this.licy.plugin('test', spy);
 
-    licy.emit('test.foo');
+    this.licy.emit('test.foo');
 
     sinon.assert.calledOnce(spy);
   },
@@ -34,9 +34,9 @@ test('autostart', {
   'invokes callback once plugin was started': function () {
     var spy = sinon.spy();
     var start = sinon.spy(function (plugin, callback) {});
-    licy.plugin('test', start);
+    this.licy.plugin('test', start);
 
-    licy.emit('test.foo', spy);
+    this.licy.emit('test.foo', spy);
 
     sinon.assert.notCalled(spy);
 
@@ -48,11 +48,11 @@ test('autostart', {
 
   'emits event on plugin': function () {
     var spy = sinon.spy();
-    licy.plugin('test', function (plugin) {
+    this.licy.plugin('test', function (plugin) {
       plugin.on('foo', spy);
     });
 
-    licy.emit('test.foo');
+    this.licy.emit('test.foo');
 
     sinon.assert.calledOnce(spy);
   },
@@ -60,11 +60,11 @@ test('autostart', {
 
   'emit event on plugin started by wildcard emit': function () {
     var spy = sinon.spy();
-    licy.plugin('some.test', function (plugin) {
+    this.licy.plugin('some.test', function (plugin) {
       plugin.on('foo', spy);
     });
 
-    licy.emit('some.*.foo');
+    this.licy.emit('some.*.foo');
 
     sinon.assert.calledOnce(spy);
   },
@@ -75,9 +75,9 @@ test('autostart', {
     var start = sinon.spy(function (plugin, callback) {
       plugin.on('foo', spy);
     });
-    licy.plugin('test', start);
+    this.licy.plugin('test', start);
 
-    licy.emit('test.foo');
+    this.licy.emit('test.foo');
 
     sinon.assert.notCalled(spy);
 
@@ -96,10 +96,10 @@ test('autostart', {
     var startB = sinon.spy(function (plugin, callback) {
       plugin.on('foo', spyB);
     });
-    licy.plugin('test.a', startA);
-    licy.plugin('test.b', startB);
+    this.licy.plugin('test.a', startA);
+    this.licy.plugin('test.b', startB);
 
-    licy.emit('test.*.foo');
+    this.licy.emit('test.*.foo');
 
     sinon.assert.notCalled(spyA);
     sinon.assert.notCalled(spyB);
@@ -119,13 +119,13 @@ test('autostart', {
   'does not queue emitted events in sync start': function () {
     var started  = sinon.spy();
     var required = sinon.spy();
-    licy.on('test.required', required);
-    licy.plugin('test', function (plugin) {
+    this.licy.on('test.required', required);
+    this.licy.plugin('test', function (plugin) {
       plugin.emit('required');
       started();
     });
 
-    licy.emit('test.foo');
+    this.licy.emit('test.foo');
 
     sinon.assert.calledOnce(started);
     sinon.assert.calledOnce(required);
@@ -136,12 +136,12 @@ test('autostart', {
   'does not queue emitted events in async start': function () {
     var started  = sinon.spy();
     var required = sinon.spy(function (callback) {});
-    licy.on('test.required', required);
-    licy.plugin('test', function (plugin, callback) {
+    this.licy.on('test.required', required);
+    this.licy.plugin('test', function (plugin, callback) {
       plugin.emit('required', callback);
     });
 
-    licy.emit('test.foo', started);
+    this.licy.emit('test.foo', started);
 
     sinon.assert.notCalled(started);
     sinon.assert.calledOnce(required);
@@ -154,11 +154,11 @@ test('autostart', {
 
   'passes arguments to listener on plugin': function () {
     var spy = sinon.spy();
-    licy.plugin('test', function (plugin) {
+    this.licy.plugin('test', function (plugin) {
       plugin.on('foo', spy);
     });
 
-    licy.emit('test.foo', 123, 'abc');
+    this.licy.emit('test.foo', 123, 'abc');
 
     sinon.assert.calledWith(spy, 123, 'abc');
   },
@@ -166,12 +166,12 @@ test('autostart', {
 
   'invokes callback once listener on plugin yields': function () {
     var listener = sinon.spy(function (callback) {});
-    licy.plugin('test', function (plugin) {
+    this.licy.plugin('test', function (plugin) {
       plugin.on('foo', listener);
     });
     var spy = sinon.spy();
 
-    licy.emit('test.foo', spy);
+    this.licy.emit('test.foo', spy);
 
     sinon.assert.notCalled(spy);
 
@@ -183,10 +183,10 @@ test('autostart', {
 
   'passes error from start function to emit callback': function () {
     var err = new Error();
-    licy.plugin('test', function (plugin) { throw err; });
+    this.licy.plugin('test', function (plugin) { throw err; });
     var spy = sinon.spy();
 
-    licy.emit('test.foo', spy);
+    this.licy.emit('test.foo', spy);
 
     sinon.assert.calledWith(spy, err);
   },
@@ -195,14 +195,14 @@ test('autostart', {
   'passes errors from start callback to emit callbacks': function () {
     var err = new Error();
     var started;
-    licy.plugin('test', function (plugin, callback) {
+    this.licy.plugin('test', function (plugin, callback) {
       started = callback;
     });
     var spy1 = sinon.spy();
     var spy2 = sinon.spy();
 
-    licy.emit('test.foo', spy1);
-    licy.emit('test.bar', spy2);
+    this.licy.emit('test.foo', spy1);
+    this.licy.emit('test.bar', spy2);
     started(err);
 
     sinon.assert.calledWith(spy1, err);
@@ -213,14 +213,14 @@ test('autostart', {
   'queues additional events until the plugin is started': function () {
     var spy = sinon.spy();
     var initialized;
-    licy.plugin('test', function (plugin, callback) {
+    this.licy.plugin('test', function (plugin, callback) {
       plugin.on('foo', spy);
       initialized = callback;
     });
 
-    licy.emit('test.foo', 1);
-    licy.emit('test.foo', 2);
-    licy.emit('test.foo', 3);
+    this.licy.emit('test.foo', 1);
+    this.licy.emit('test.foo', 2);
+    this.licy.emit('test.foo', 3);
 
     sinon.assert.notCalled(spy);
 
@@ -237,13 +237,13 @@ test('autostart', {
     var before = sinon.spy();
     var on     = sinon.spy();
     var after  = sinon.spy();
-    licy.plugin('test', function (plugin) {
+    this.licy.plugin('test', function (plugin) {
       plugin.before('foo', before);
       plugin.on('foo', on);
       plugin.after('foo', after);
     });
 
-    licy.emit('test.foo');
+    this.licy.emit('test.foo');
 
     sinon.assert.calledOnce(before);
     sinon.assert.calledOnce(on);
@@ -255,14 +255,14 @@ test('autostart', {
     var before = sinon.spy();
     var on     = sinon.spy();
     var after  = sinon.spy();
-    licy.plugin('test', function (plugin) {
+    this.licy.plugin('test', function (plugin) {
       plugin.before('foo', before);
       plugin.on('foo', on);
       plugin.after('foo', after);
     });
-    licy.start('test');
+    this.licy.start('test');
 
-    licy.emit('test.foo');
+    this.licy.emit('test.foo');
 
     sinon.assert.calledOnce(before);
     sinon.assert.calledOnce(on);
@@ -274,13 +274,13 @@ test('autostart', {
     var before = sinon.spy();
     var on     = sinon.spy();
     var after  = sinon.spy();
-    licy.plugin('test', function (plugin) {
+    this.licy.plugin('test', function (plugin) {
       plugin.before('foo.*', before);
       plugin.on('foo.*', on);
       plugin.after('foo.*', after);
     });
 
-    licy.emit('test.foo.*');
+    this.licy.emit('test.foo.*');
 
     sinon.assert.notCalled(before); // not supported for the time being
     sinon.assert.calledOnce(on);
@@ -292,14 +292,14 @@ test('autostart', {
     var before = sinon.spy();
     var on     = sinon.spy();
     var after  = sinon.spy();
-    licy.plugin('test', function (plugin) {
+    this.licy.plugin('test', function (plugin) {
       plugin.before('foo.*', before);
       plugin.on('foo.*', on);
       plugin.after('foo.*', after);
     });
-    licy.start('test');
+    this.licy.start('test');
 
-    licy.emit('test.foo.*');
+    this.licy.emit('test.foo.*');
 
     sinon.assert.calledOnce(before);
     sinon.assert.calledOnce(on);
