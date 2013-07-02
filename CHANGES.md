@@ -5,6 +5,10 @@
 - Licy is not a singleton anymore. Instead, a factory function is exposed that
   creates a new licy instance on each call.
 - Removed `reset` since it's obsolete.
+- Plugins now have a `licy` object refering to the licy instance that created
+  the plugin.
+- Event handlers registered on `plugin.licy` will be unsubscribed automatically
+  when the plugin is destroyed.
 
 ## v0.8.0
 

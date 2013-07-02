@@ -14,7 +14,7 @@ var sinon   = require('sinon');
 var licy    = require('../lib/licy');
 
 
-test('require', {
+test('restart', {
 
   before: function () {
     this.licy = licy();
