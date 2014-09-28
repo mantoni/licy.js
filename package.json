@@ -1,33 +1,43 @@
 {
-  "name"            : "licy",
-  "version"         : "0.9.0",
-  "description"     : "Asynchronous dependency and lifecycle management for Node and the browser",
-  "keywords"        : ["lifecycle", "dependency", "node", "browser"],
-  "author"          : "Maximilian Antoni (http://maxantoni.de)",
-  "homepage"        : "http://mantoni.github.com/licy.js",
-  "main"            : "./lib/licy.js",
-  "engines"         : {
-    "node"          : ">=0.6"
+  "name": "licy",
+  "version": "0.9.0",
+  "description": "",
+  "keywords": [
+    "lifecycle",
+    "flow"
+  ],
+  "author": "Maximilian Antoni (http://maxantoni.de)",
+  "homepage": "http://maxantoni.de/projects/licy.js/",
+  "main": "./lib/licy.js",
+  "engines": {
+    "node": ">=0.10"
   },
-  "scripts"         : {
-    "test"          : "make test"
+  "scripts": {
+    "start": "mocha --watch",
+    "lint": "jslint --color \"**/*.js\"",
+    "wd": "mochify --wd",
+    "test": "npm run lint && echo '\n\n# node:' && mocha -R dot && mochify --cover"
   },
-  "repository"      : {
-    "type"          : "git",
-    "url"           : "https://github.com/mantoni/licy.js.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mantoni/licy.js.git"
   },
-  "dependencies"    : {
-    "hubjs"         : "~0.14.0"
+  "dependencies": {
+    "hubjs": "^1.0",
+    "inherits": "^2.0.1"
   },
-  "devDependencies" : {
-    "utest"         : "~0.0.8",
-    "urun"          : "~0.0.6",
-    "sinon"         : "~1.6.0",
-    "uglify-js"     : "~1.2.6",
-    "autolint"      : "~1.0.4",
-    "phantomic"     : "~0.2.0",
-    "browserify"    : ">=2.13 <3",
-    "consolify"     : "~0.3.0"
+  "devDependencies": {
+    "mocha": "^1.21",
+    "jslint": "^0.6",
+    "mochify": "^1.1",
+    "bench": "^0.3",
+    "sinon": "^1.10"
   },
-  "files"           : ["lib", "README.md", "LICENSE", "CHANGES"]
+  "files": [
+    "lib",
+    "README.md",
+    "CHANGES.md",
+    "LICENSE"
+  ],
+  "license": "MIT"
 }
