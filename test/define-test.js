@@ -309,4 +309,10 @@ describe('define', function () {
     sinon.assert.calledWith(s, t);
   });
 
+  it('defines default toString', function () {
+    var t = licy.create({});
+
+    assert.equal(t.toString(), '[licy Type]');
+  });
+
 });

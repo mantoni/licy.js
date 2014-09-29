@@ -47,8 +47,4 @@ describe('licy', function () {
     }, TypeError);
   });
 
-  it('implements toString', function () {
-    assert.equal(licy.toString(), '[object Licy]');
-  });
-
 });
