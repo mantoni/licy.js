@@ -36,7 +36,7 @@ describe('destroy', function () {
     t.on('test', s);
 
     t.destroy();
-    t.emit('test');
+    t.emit('test', function () { return; }); // pass callback to ignore error
 
     sinon.assert.notCalled(s);
   });
@@ -47,7 +47,7 @@ describe('destroy', function () {
     t.addFilter('test', s);
 
     t.destroy();
-    t.emit('test');
+    t.emit('test', function () { return; }); // pass callback to ignore error
 
     sinon.assert.notCalled(s);
   });
@@ -96,7 +96,7 @@ describe('destroy', function () {
     sinon.spy(c, 'destroy');
 
     t.destroy();
-    t.destroy();
+    t.destroy(function () { return; }); // pass callback to ignore error
 
     sinon.assert.calledOnce(c.destroy);
   });
@@ -150,7 +150,7 @@ describe('destroy', function () {
       s.reset();
 
       onDestroy.yield();
-      t.emit('test');
+      t.emit('test', function () { return; });
 
       sinon.assert.notCalled(s);
     });
@@ -223,5 +223,19 @@ describe('destroy', function () {
 
       sinon.assert.calledOnce(s);
     });
+
+  it('throws when using the API after destruction', function () {
+    var s = sinon.spy();
+    var t = licy.create({
+      foo: s
+    });
+
+    t.destroy();
+
+    sinon.assert.notCalled(s);
+    assert.throws(function () {
+      t.foo();
+    }, /Error: \[licy Type\] destroyed/);
+  });
 
 });
