@@ -13,7 +13,7 @@
     "node": ">=0.10"
   },
   "scripts": {
-    "start": "mocha --watch",
+    "start": "mocha --watch -R min",
     "lint": "jslint --color \"**/*.js\"",
     "wd": "mochify --wd",
     "test": "npm run lint && echo '\n\n# node:' && mocha -R dot && mochify --cover"
