@@ -1,17 +1,16 @@
-# Licy Concept
+# Licy concept
 
 There are many questions to answer when building modules, and it's sometimes
-hard to find answers up front. Can it be created synchronously or
-asynchronously? Do I need to notify other part of the system? Do I have to
-unregister from other objects when done? Am I responsible for destroying
-other objects? Changing these behaviors later can be impossible or require a
-major refactoring.
+hard to find answers up front. Can you create a UI widget synchronous or
+asynchronous? Do I need to notify other part of the system? Do I have to
+unregister from other objects when done? Am I responsible for destroying other
+objects? Changing these aspects later often requires a major refactoring.
 
-Licy does not try to find answers to those questions. Instead, it wraps objects
-to allow you to change the behavior later, or even at runtime. It allows to add
-functionality dynamically, similar to AOP, to implement solutions for cross
-cutting concerns in central places. It can guarantee callback invokation,
-child object destruction and event listener deregistration.
+Licy does not try to answer these questions. Instead, it allows you to change
+the behavior later, or even at runtime. It allows you to add functionality
+dynamically, similar to AOP, to implement solutions for cross cutting concerns
+in one place. It guarantees callback invokation, child object destruction and
+event listener deregistration.
 
 ## Async creation and communication
 
