@@ -4,7 +4,10 @@
   "description": "",
   "keywords": [
     "lifecycle",
-    "flow"
+    "flow",
+    "event",
+    "emitter",
+    "pubsub"
   ],
   "author": "Maximilian Antoni (http://maxantoni.de)",
   "homepage": "http://maxantoni.de/projects/licy.js/",
@@ -13,10 +16,10 @@
     "node": ">=0.10"
   },
   "scripts": {
-    "start": "mocha --watch -R min",
+    "start": "mochify --watch",
     "lint": "jslint --color \"**/*.js\"",
     "wd": "mochify --wd",
-    "test": "npm run lint && echo '\n\n# node:' && mocha -R dot && mochify --cover"
+    "test": "npm run lint && echo '# node:' && mocha -R dot && mochify --cover"
   },
   "repository": {
     "type": "git",
@@ -24,7 +27,7 @@
   },
   "dependencies": {
     "hubjs": "^1.0",
-    "inherits": "^2.0.1"
+    "inherits": "^2.0"
   },
   "devDependencies": {
     "jslint": "^0.6",
