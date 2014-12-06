@@ -232,10 +232,10 @@ describe('destroy', function () {
 
     t.destroy();
 
-    sinon.assert.notCalled(s);
     assert.throws(function () {
       t.foo();
     }, /Error: \[licy Type\] destroyed/);
+    sinon.assert.notCalled(s);
   });
 
 });
