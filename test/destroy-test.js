@@ -66,14 +66,28 @@ describe('destroy', function () {
       sinon.assert.calledTwice(s);
     });
 
-  it('calls destroy on children', function () {
-    var t = licy.create();
-    var c1 = t.create();
-    var c2 = t.create();
+  it('calls destroy on created children', function () {
+    var c1 = licy.create();
+    var c2 = c1.create();
     sinon.spy(c1, 'destroy');
     sinon.spy(c2, 'destroy');
 
-    t.destroy();
+    licy.destroy();
+
+    sinon.assert.calledOnce(c1.destroy);
+    sinon.assert.calledOnce(c2.destroy);
+  });
+
+  it('calls destroy on newed up children', function () {
+    var T1 = licy.define();
+    var c1 = new T1();
+    var T2 = c1.define();
+    var c2 = new T2();
+
+    sinon.spy(c1, 'destroy');
+    sinon.spy(c2, 'destroy');
+
+    licy.destroy();
 
     sinon.assert.calledOnce(c1.destroy);
     sinon.assert.calledOnce(c2.destroy);
