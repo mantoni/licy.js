@@ -10,7 +10,7 @@
     "pubsub"
   ],
   "author": "Maximilian Antoni (http://maxantoni.de)",
-  "homepage": "http://maxantoni.de/projects/licy.js/",
+  "homepage": "https://github.com/mantoni/licy.js",
   "main": "./lib/licy.js",
   "engines": {
     "node": ">=0.10"
