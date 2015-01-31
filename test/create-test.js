@@ -138,7 +138,7 @@ describe('create', function () {
     sinon.assert.calledWith(s, t, T);
   });
 
-  it('does not return from from "create" event on type until licy returns',
+  it('does not return from "create" event on type until licy returns',
     function () {
       var s = sinon.spy();
       var t = licy.define();
