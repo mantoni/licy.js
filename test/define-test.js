@@ -306,14 +306,16 @@ describe('define', function () {
     var s = sinon.spy();
     T.prototype.on('create', s);
 
-    var t = new T();
+    var t1 = new T();
+    var t2 = new T();
 
     sinon.assert.notCalled(s);
 
     c();
 
-    sinon.assert.calledOnce(s);
-    sinon.assert.calledWith(s, t);
+    sinon.assert.calledTwice(s);
+    sinon.assert.calledWith(s, t1);
+    sinon.assert.calledWith(s, t2);
   });
 
   it('defines default toString', function () {
