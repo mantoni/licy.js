@@ -1,3 +1,10 @@
+/*
+ * licy.js
+ *
+ * Copyright (c) 2012-2015 Maximilian Antoni <mail@maxantoni.de>
+ *
+ * @license MIT
+ */
 /*global describe, it, beforeEach, afterEach*/
 'use strict';
 
