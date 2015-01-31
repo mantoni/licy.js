@@ -6,20 +6,20 @@
 
 Module lifecycle management for Node and the browser.
 
-## Install on Node
-
-    npm install licy
-
-## Browser support
-
-Use [Browserify][] to create a standalone file.
-
 ## Features
 
 - Guaranteed destruction of sub components
 - Intercept function calls with filters
 - Defer function calls until constructor invokes callback
 - Receive notifications if new instances are created
+
+## Install with npm
+
+    npm install licy
+
+## Browser support
+
+Use [Browserify][] to create a standalone file.
 
 ## Usage
 
