@@ -4,14 +4,14 @@
 [![SemVer]](http://semver.org)
 [![License]](https://github.com/mantoni/licy.js/blob/master/LICENSE)
 
-Module lifecycle management for Node and the browser.
+Object lifecycle management for Node and the browser.
 
 ## Features
 
-- Guaranteed destruction of sub components
-- Intercept function calls with filters
-- Defer function calls until constructor invokes callback
-- Receive notifications if new instances are created
+- Async creation: Defer function calls until constructor invokes callback
+- Events: Define types that automatically emit events for method calls
+- Interceptors: Register filters for methods
+- Cleanup: Destroy trees of instances
 
 ## Install with npm
 
@@ -26,17 +26,17 @@ Use [Browserify][] to create a standalone file.
 ```js
 var licy = require('licy');
 
-var Foo = licy.define(function () {
+var Car = licy.define(function () {
 
   return {
-    bar: function () {
+    drive: function () {
       // ...
     }
   };
 });
 
-var foo = new Foo();
-foo.bar();
+var car = new Car();
+car.drive();
 ```
 
 ## API
