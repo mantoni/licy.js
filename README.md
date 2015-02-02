@@ -52,8 +52,14 @@ Licy is a [hub.js][] instance with these additions:
       return the API as an object.
     - `object`: Defines the API directly. A `constructor` can be defined
       optionally.
-  The returned type creates new licy instances. Each instance is derived from
-  licy itself and also inherits the [hub.js][] API.
+  The returned type creates new Licy instances. Each instance is derived from
+  Licy itself and also inherits the [hub.js][] API.
+- `extend(Super, definition)`: Defines a new type which is derived from the
+  `Super` type. Instances of the new type are `instanceof Super`. If a
+  constructor is given, or if `definition` is a function, the super constructor
+  must be explicitly invoked with `Super.super_.call(this)`. If a method is
+  defined that already exists in the super type, it is registered as a
+  [filter][].
 - `create([definition])`: Is a convenience function to define and create an
   instance in one call. The `definition` may also be a licy type in which case
   a new instance of the type is returned.
@@ -82,7 +88,4 @@ Each type instance and the root licy object emit these events:
 [License]: http://img.shields.io/npm/l/licy.svg
 [Browserify]: http://browserify.org
 [hub.js]: http://github.com/mantoni/hub.js
-[EventEmitter]: http://nodejs.org/api/events.html
-[filter chains]: https://github.com/mantoni/glob-filter.js
-[async-glob-events]: https://github.com/mantoni/async-glob-events.js
-[glob-filter]: https://github.com/mantoni/glob-filter.js
+[filter]: https://github.com/mantoni/glob-filter.js

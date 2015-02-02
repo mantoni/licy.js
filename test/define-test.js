@@ -202,28 +202,6 @@ describe('define', function () {
     sinon.assert.calledOnce(s);
   });
 
-  it('allows to call other function from within ctor', function () {
-    var s = sinon.spy();
-
-    licy.create({
-      constructor : function () { this.test(); },
-      test        : s
-    });
-
-    sinon.assert.calledOnce(s);
-  });
-
-  it('allows to call other function from within async ctor', function () {
-    var s = sinon.spy();
-
-    licy.create({
-      constructor : function (callback) { this.test(); callback(); },
-      test        : s
-    });
-
-    sinon.assert.calledOnce(s);
-  });
-
   it('uses given function as constructor', function () {
     var F = function () { return; };
     var T = licy.define(F);
