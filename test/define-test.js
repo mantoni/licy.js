@@ -241,7 +241,7 @@ describe('define', function () {
     sinon.assert.calledOnce(s.secondCall.returnValue.test);
   });
 
-  it('emits "define" event', function () {
+  it('emits "define" event on root', function () {
     var s = sinon.spy();
     licy.on('define', s);
 
@@ -249,6 +249,31 @@ describe('define', function () {
 
     sinon.assert.calledOnce(s);
     sinon.assert.calledWith(s, T);
+  });
+
+  it('emits "define" event on parent', function () {
+    var p = licy.create();
+    var s = sinon.spy();
+    p.on('define', s);
+
+    var T = p.define();
+
+    sinon.assert.calledOnce(s);
+    sinon.assert.calledWith(s, T);
+  });
+
+  it('bubbles "define" event', function () {
+    var p = licy.create();
+    var s1 = sinon.spy();
+    var s2 = sinon.spy();
+    p.on('define', s1);
+    licy.on('define', s2);
+
+    var T = p.define();
+
+    sinon.assert.calledOnce(s2);
+    sinon.assert.calledWith(s2, T);
+    sinon.assert.callOrder(s1, s2);
   });
 
   it('holds back events for instances until "define" returned', function () {

@@ -119,6 +119,33 @@ describe('create', function () {
     sinon.assert.calledWith(s, t, T);
   });
 
+  it('emits "create" event on parent object', function () {
+    var p = licy.create();
+    var s = sinon.spy();
+    p.on('create', s);
+    var T = p.define();
+
+    var t = new T();
+
+    sinon.assert.calledOnce(s);
+    sinon.assert.calledWith(s, t, T);
+  });
+
+  it('bubbles "create" event', function () {
+    var p = licy.create();
+    var s1 = sinon.spy();
+    var s2 = sinon.spy();
+    p.on('create', s1);
+    licy.on('create', s2);
+    var T = p.define();
+
+    var t = new T();
+
+    sinon.assert.calledOnce(s2);
+    sinon.assert.calledWith(s2, t, T);
+    sinon.assert.callOrder(s1, s2);
+  });
+
   it('does not emit "create" on root object if type blocks it', function () {
     var s = sinon.spy();
     licy.on('create', s);
