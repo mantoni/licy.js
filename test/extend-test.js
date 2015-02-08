@@ -299,4 +299,15 @@ describe('extend', function () {
     sinon.assert.notCalled(method);
   });
 
+  it('forwards extend calls on types to licy.extend', sinon.test(function () {
+    this.spy(licy, 'extend');
+    var spec = { test : sinon.spy() };
+
+    var Child = Super.extend(spec);
+
+    sinon.assert.calledOnce(licy.extend);
+    sinon.assert.calledWith(licy.extend, Super, spec);
+    assert.equal(Child, licy.extend.firstCall.returnValue);
+  }));
+
 });

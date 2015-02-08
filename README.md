@@ -68,6 +68,13 @@ Licy is a [hub.js][] instance with these additions:
   children are destroyed. If an error occurred, it is passed as the only
   argument to the callback.
 
+## Type API
+
+Each type returned by `licy.define()` is a Licy instance with these additions:
+
+- `extend(definition)`: Is a shortcut for `licy.extend(Super, definition)`
+  with `Super` being this type.
+
 ## Events
 
 The `prototype` of custom defined types is a licy instance itself. It can be
