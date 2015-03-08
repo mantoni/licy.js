@@ -90,7 +90,7 @@ describe('define', function () {
   it('emits "create" event on prototype with instance', function () {
     var T = licy.define();
     var s = sinon.spy();
-    T.prototype.on('create', s);
+    T.prototype.on('instance.create', s);
 
     var t = new T();
 
@@ -299,27 +299,28 @@ describe('define', function () {
     sinon.assert.calledTwice(s);
   });
 
-  it('holds back "create" event until "define" returned', function () {
-    var c;
-    licy.on('define', function (Type, callback) {
-      /*jslint unparam: true*/
-      c = callback;
+  it('holds back "instance.create" event until "define" returned',
+    function () {
+      var c;
+      licy.on('define', function (Type, callback) {
+        /*jslint unparam: true*/
+        c = callback;
+      });
+      var T = licy.define();
+      var s = sinon.spy();
+      T.prototype.on('instance.create', s);
+
+      var t1 = new T();
+      var t2 = new T();
+
+      sinon.assert.notCalled(s);
+
+      c();
+
+      sinon.assert.calledTwice(s);
+      sinon.assert.calledWith(s, t1, T);
+      sinon.assert.calledWith(s, t2, T);
     });
-    var T = licy.define();
-    var s = sinon.spy();
-    T.prototype.on('create', s);
-
-    var t1 = new T();
-    var t2 = new T();
-
-    sinon.assert.notCalled(s);
-
-    c();
-
-    sinon.assert.calledTwice(s);
-    sinon.assert.calledWith(s, t1);
-    sinon.assert.calledWith(s, t2);
-  });
 
   it('defines default toString', function () {
     var t = licy.create({});

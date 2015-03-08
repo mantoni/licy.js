@@ -140,8 +140,8 @@ describe('extend', function () {
     var T = licy.extend(Super, {});
     var s1 = sinon.spy();
     var s2 = sinon.spy();
-    Super.prototype.on('create', s1);
-    T.prototype.on('create', s2);
+    Super.prototype.on('instance.create', s1);
+    T.prototype.on('instance.create', s2);
 
     licy.create(T);
 

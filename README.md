@@ -77,18 +77,19 @@ Each type returned by `licy.define()` is a Licy instance with these additions:
 
 ## Events
 
-The `prototype` of custom defined types is a licy instance itself. It can be
-used to emit and subscribe global type specific events. These events are always
-emitted:
-
-- `create(instance, callback)`: When a new instance is created.
-- `destroy(instance, callback)`: (TODO) When an instance is destroyed.
-
 Each type instance and the root licy object emit these events:
 
 - `define(type, callback)`: When a new child type is defined.
 - `create(instance, type, callback)`: When a child instance is created.
 - `destroy(callback)`: When the instance is destroyed.
+
+The `prototype` of custom defined types is a licy instance itself. It can be
+used to emit and subscribe global type specific events. These events are always
+emitted:
+
+- `instance.create(instance, type, callback)`: When a new instance is created.
+- `instance.destroy(instance, error, callback)`: When an instance is destroyed.
+  If an error occurred during destruction, the Error is passed on as `error`.
 
 [Build Status]: http://img.shields.io/travis/mantoni/licy.js.svg
 [SemVer]: http://img.shields.io/:semver-%E2%9C%93-brightgreen.svg

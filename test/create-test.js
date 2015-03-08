@@ -146,12 +146,23 @@ describe('create', function () {
     sinon.assert.callOrder(s1, s2);
   });
 
+  it('emits "instance.create" on type', function () {
+    var s = sinon.spy();
+    var T = licy.define();
+    T.prototype.on('instance.create', s);
+
+    var t = new T();
+
+    sinon.assert.calledOnce(s);
+    sinon.assert.calledWith(s, t, T);
+  });
+
   it('does not emit "create" on root object if type blocks it', function () {
     var s = sinon.spy();
     licy.on('create', s);
     var T = licy.define();
     var n;
-    T.prototype.addFilter('create', function (next) {
+    T.prototype.addFilter('instance.create', function (next) {
       n = next;
     });
 
@@ -170,7 +181,7 @@ describe('create', function () {
       var s = sinon.spy();
       var t = licy.define();
       var c;
-      t.prototype.addFilter('create', function (next) {
+      t.prototype.addFilter('instance.create', function (next) {
         next(s);
       });
       licy.on('create', function (type, Type, callback) {
@@ -188,7 +199,8 @@ describe('create', function () {
 
   function assertDeferredDelegate(T) {
     var c;
-    T.prototype.on('create', function (type, callback) {
+    T.prototype.on('instance.create', function (type, Type, callback) {
+      assert.equal(T, Type);
       assert(type instanceof T);
       c = callback;
     });

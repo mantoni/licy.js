@@ -37,6 +37,126 @@ describe('destroy', function () {
     sinon.assert.calledOnce(s);
   });
 
+  it('emits "instance.destroy" event on prototype', function () {
+    var s = sinon.spy();
+    var T = licy.define();
+    T.prototype.on('instance.destroy', s);
+
+    var t = new T();
+    t.destroy();
+
+    sinon.assert.calledOnce(s);
+    sinon.assert.calledWith(s, t);
+  });
+
+  it('does not emit "instance.destroy" if destroy listener does not return',
+    function () {
+      var s = sinon.spy();
+      var T = licy.define();
+      T.prototype.on('instance.destroy', s);
+
+      var t = new T();
+      t.on('destroy', function (callback) {
+        /*jslint unparam: true*/
+        return;
+      });
+      t.destroy();
+
+      sinon.assert.notCalled(s);
+    });
+
+  it('does not return from destroy until "instance.destroy" returned',
+    function () {
+      var T = licy.define();
+      var c;
+      T.prototype.on('instance.destroy', function (instance, err, callback) {
+        /*jslint unparam: true*/
+        c = callback;
+      });
+      var t = new T();
+      var s = sinon.spy();
+
+      t.destroy(s);
+
+      sinon.assert.notCalled(s);
+
+      c();
+
+      sinon.assert.calledOnce(s);
+    });
+
+  it('passes destroy error to callback', function () {
+    var T = licy.define();
+    var t = new T();
+    var s = sinon.spy();
+    var err = new Error();
+    t.on('destroy', function () {
+      throw err;
+    });
+
+    t.destroy(s);
+
+    sinon.assert.calledWith(s, err);
+  });
+
+  it('passes destroy error to "instance.destroy"', function () {
+    var T = licy.define();
+    var s = sinon.spy();
+    T.prototype.on('instance.destroy', s);
+    var t = new T();
+    var err = new Error();
+    t.on('destroy', function () {
+      throw err;
+    });
+
+    t.destroy(function () { return; });
+
+    sinon.assert.calledWith(s, t, err);
+  });
+
+  it('passes error from "instance.destroy" back to destroy callback',
+    function () {
+      var T = licy.define();
+      var t = new T();
+      var s = sinon.spy();
+      var err = new Error();
+      t.on('destroy', s);
+      T.prototype.on('instance.destroy', function () {
+        throw err;
+      });
+
+      t.destroy(s);
+
+      sinon.assert.calledWith(s, err);
+    });
+
+  it('does not remove listeners until "instance.destroy" returned',
+    function () {
+      var T = licy.define();
+      var c;
+      T.prototype.on('instance.destroy', function (instance, err, callback) {
+        /*jslint unparam: true*/
+        c = callback;
+      });
+      var t = new T();
+      var s = sinon.spy();
+      t.on('test', s);
+
+      t.destroy();
+      t.emit('test');
+
+      sinon.assert.calledOnce(s);
+      s.reset();
+
+      c();
+      t.emit('test', function () {
+        // Ignore error
+        return;
+      });
+
+      sinon.assert.notCalled(s);
+    });
+
   it('removes all listeners', function () {
     var s = sinon.spy();
     var t = licy.create();
