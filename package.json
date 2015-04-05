@@ -16,10 +16,12 @@
     "node": ">=0.10"
   },
   "scripts": {
-    "start": "mochify --watch",
+    "watch": "mochify --watch",
     "lint": "jslint --color \"**/*.js\"",
     "wd": "mochify --wd",
-    "test": "npm run lint && echo '# node:' && mocha -R dot && mochify --cover"
+    "pretest": "npm run lint",
+    "test": "mocha && npm run cover",
+    "cover": "mochify --cover"
   },
   "repository": {
     "type": "git",
