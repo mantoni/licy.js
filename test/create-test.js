@@ -355,4 +355,14 @@ describe('create', function () {
     sinon.assert.calledOn(s, t);
   });
 
+  it('passes constructor arguments through licy.create', function () {
+    var s = sinon.spy(function () { return {}; });
+    var T = licy.define(s);
+
+    licy.create(T, 42, 'abc', [1, 2, 3]);
+
+    sinon.assert.calledOnce(s);
+    sinon.assert.calledWithExactly(s, 42, 'abc', [1, 2, 3]);
+  });
+
 });
