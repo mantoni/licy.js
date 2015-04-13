@@ -17,7 +17,7 @@
   },
   "scripts": {
     "watch": "mochify --watch",
-    "lint": "jslint --color \"**/*.js\"",
+    "lint": "jslint --edition=latest --color \"**/*.js\"",
     "wd": "mochify --wd",
     "pretest": "npm run lint",
     "test": "mocha && npm run cover",
@@ -32,7 +32,7 @@
     "inherits": "^2.0"
   },
   "devDependencies": {
-    "jslint": "^0.6",
+    "jslint": "^0.8",
     "mocha": "^2.0",
     "mochify": "^2.0",
     "bench": "^0.3",
