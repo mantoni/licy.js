@@ -210,13 +210,24 @@ describe('destroy', function () {
     var c1 = new T1();
     var T2 = c1.define();
     var c2 = new T2();
-
     sinon.spy(c1, 'destroy');
     sinon.spy(c2, 'destroy');
 
     licy.destroy();
 
     sinon.assert.calledOnce(c1.destroy);
+    sinon.assert.calledOnce(c2.destroy);
+  });
+
+  it('calls destroy on children created from another type', function () {
+    var T1 = licy.define();
+    var T2 = licy.define();
+    var c1 = licy.create(T1);
+    var c2 = c1.create(T2);
+    sinon.spy(c2, 'destroy');
+
+    c1.destroy();
+
     sinon.assert.calledOnce(c2.destroy);
   });
 
