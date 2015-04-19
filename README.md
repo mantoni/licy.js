@@ -8,10 +8,11 @@ Object lifecycle management for Node and the browser.
 
 ## Features
 
-- Async creation: Defer function calls until constructor invokes callback
-- Events: Define types that automatically emit events for method calls
-- Interceptors: Register filters for methods
-- Cleanup: Destroy trees of instances
+- Async creation: Function calls are automatically deferred until constructor
+  invokes callback
+- Interceptors: Register filters for any function call or event
+- All function calls are observable and can be intercepted
+- Destroy trees of instances
 
 ## Install with npm
 
@@ -20,24 +21,6 @@ Object lifecycle management for Node and the browser.
 ## Browser support
 
 Use [Browserify][] to create a standalone file.
-
-## Usage
-
-```js
-var licy = require('licy');
-
-var Car = licy.define(function () {
-
-  return {
-    drive: function () {
-      // ...
-    }
-  };
-});
-
-var car = new Car();
-car.drive();
-```
 
 ## API
 
@@ -62,7 +45,8 @@ Licy is a [hub.js][] instance with these additions:
   [filter][].
 - `create([definition])`: Is a convenience function to define and create an
   instance in one call. The `definition` may also be a licy type in which case
-  a new instance of the type is returned.
+  a new instance of the type is returned and will be bound to the lifespan of
+  this type.
 - `destroy([callback])`: Emits the `destroy` event on the licy instance and all
   children. If a callback is given, it is invoked after this instance and all
   children are destroyed. If an error occurred, it is passed as the only
