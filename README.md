@@ -4,7 +4,7 @@
 [![SemVer]](http://semver.org)
 [![License]](https://github.com/mantoni/licy.js/blob/master/LICENSE)
 
-Object lifecycle management for Node and the browser.
+Objects with managed lifecycles for Node and the browser.
 
 ## Features
 
@@ -12,11 +12,11 @@ Object lifecycle management for Node and the browser.
   invokes callback
 - Interceptors: Register filters for any function call or event
 - All function calls are observable and can be intercepted
-- Destroy trees of instances
+- Create trees of instances that get destroyed together
 
 ## Install with npm
 
-    npm install licy
+    npm install licy --save
 
 ## Browser support
 
@@ -36,28 +36,28 @@ Licy is a [hub.js][] instance with these additions:
     - `object`: Defines the API directly. A `constructor` can be defined
       optionally.
   The returned type creates new Licy instances. Each instance is derived from
-  Licy itself and also inherits the [hub.js][] API.
+  Licy itself and also inherits the [hub.js][] API. All created instances are
+  destroyed when the defining instance is destroyed.
+- `create([definition])`: Creates an instance that will be destroyed with this
+  instance. If `definition` is not a type, `define(definition)` is called
+  before creating an instance.
+- `destroy([callback])`: Emits the `destroy` event on the licy instance and all
+  children. If a callback is given, it is invoked after this instance and all
+  children are destroyed. If an error occurred, it is passed as the only
+  argument to the callback.
+- `destroyWith(type)`: Destroy this instance when `type` is destroyed.
 - `extend(Super, definition)`: Defines a new type which is derived from the
   `Super` type. Instances of the new type are `instanceof Super`. If a
   constructor is given, or if `definition` is a function, the super constructor
   must be explicitly invoked with `Super.super_.call(this)`. If a method is
   defined that already exists in the super type, it is registered as a
   [filter][].
-- `create([definition])`: Is a convenience function to define and create an
-  instance in one call. The `definition` may also be a licy type in which case
-  a new instance of the type is returned and will be bound to the lifespan of
-  this type.
-- `destroy([callback])`: Emits the `destroy` event on the licy instance and all
-  children. If a callback is given, it is invoked after this instance and all
-  children are destroyed. If an error occurred, it is passed as the only
-  argument to the callback.
 
 ## Type API
 
 Each type returned by `licy.define()` is a Licy instance with these additions:
 
-- `extend(definition)`: Is a shortcut for `licy.extend(Super, definition)`
-  with `Super` being this type.
+- `Type.extend(definition)`: Is a shortcut for `licy.extend(Type, definition)`.
 
 ## Events
 
