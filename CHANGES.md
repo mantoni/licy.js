@@ -1,5 +1,10 @@
 # Changes
 
+## 1.0.0
+
+- Complete rewrite. Everything changed. Nothing stayed as it was. Read the all
+  new README.
+
 ## 0.9.0
 
 - Licy is not a singleton anymore. Instead, a factory function is exposed that
