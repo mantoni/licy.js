@@ -10,9 +10,129 @@ Objects with managed lifecycles for Node and the browser.
 
 - Async creation: Function calls are automatically deferred until constructor
   invokes callback
-- Interceptors: Register filters for any function call or event
 - All function calls are observable and can be intercepted
-- Create trees of instances that get destroyed together
+- Create hierarchies of instances that get destroyed together
+
+## How does it work?
+
+Licy types can be defined in two ways. Using an object:
+
+```js
+var Hello = licy.define({
+  constructor: function (name) {
+    this.name = name;
+  },
+  log: function () {
+    console.log('Hello ' + this.name);
+  }
+});
+```
+
+Or using a function:
+
+```js
+var Hello = licy.define(function (name) {
+  return {
+    log: function () {
+      console.log('Hello ' + name);
+    }
+  };
+});
+```
+
+Types that where defined with licy can be newed up like any other JavaScript
+type. Both of the examples above can be used like this:
+
+```js
+var hello = new Hello('world');
+hello.log(); // logs "Hello world"
+```
+
+### Async object creation
+
+Any defined type can be changed to be created asynchronously:
+
+```js
+var Hello = licy.define(function (name, callback) {
+  setTimeout(callback, 500);
+  return { /* as above */ };
+});
+
+var hello = new Hello('world');
+hello.log(); // logs "Hello world" after 500 milliseconds
+```
+
+All function calls will be implicitly deferred until the constructor invoked
+the callback.
+
+As a consequence, obtaining the return value of a function only works with
+callbacks:
+
+```js
+var Hello = licy.define(function (name) {
+  return {
+    get: function () {
+      return 'Hello ' + name;
+    }
+  };
+});
+
+var hello = new Hello('world');
+
+console.log(hello.get()); // logs "Hello undefined"
+hello.get(function (err, value) {
+  console.log(value); // logs "Hello world"
+});
+```
+
+Note that the callback follows the Node.js `(err, value)` convention.
+
+### Observing and intercepting calls
+
+Each licy instance inherits the [hub.js][] event emitter API and emits an event
+for each function call:
+
+```js
+hello.on('log', function () {
+  // Invoked on hello.log() calls
+});
+```
+
+[Filters][filter] can be used to intercept calls:
+
+```js
+hello.addFilter('log', function (next) {
+  // Defer all calls by 500 milliseconds:
+  setTimeout(function () {
+    next();
+  }, 500);
+});
+```
+
+### Destroying instances
+
+Each licy instance has a `destroy([callback])` implementation which emits a
+`"destroy"` event and invokes the defined `destroy` function, if given:
+
+```js
+var Hello = licy.define(function (name) {
+  return {
+    destroy: function () {
+      console.log('Bye ' + name);
+    }
+  };
+});
+
+var hello = new Hello('world');
+
+hello.destroy();
+```
+
+Calling `licy.destroy()` will destroy all existing licy instances. This can be
+used to shut down an application cleanly, e.g. closing a server gracefully.
+
+To bind the lifecycle of one object to another, invoke `a.destroyWith(b)`. Use
+`create(definition)` to bind a child object to a parent: `var b = a.create(B)`.
 
 ## Install with npm
 
