@@ -20,7 +20,8 @@ Objects with managed lifecycles for Node and the browser.
 
 ## Browser support
 
-Use [Browserify][] to create a standalone file.
+Use [Browserify][] to create a standalone file. The licy test suite passes on
+IE 9, 10, 11, Chrome \*, Filefox \* and PhantomJS.
 
 ## API
 
@@ -74,6 +75,15 @@ emitted:
 - `instance.create(instance, type, callback)`: When a new instance is created.
 - `instance.destroy(instance, error, callback)`: When an instance is destroyed.
   If an error occurred during destruction, the Error is passed on as `error`.
+
+## Development
+
+- `npm install` to install the dev dependencies
+- `npm test` to lint, run tests on Node and PhantomJS and check code coverage
+
+## License
+
+MIT
 
 [Build Status]: http://img.shields.io/travis/mantoni/licy.js.svg
 [SemVer]: http://img.shields.io/:semver-%E2%9C%93-brightgreen.svg
