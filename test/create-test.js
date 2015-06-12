@@ -89,24 +89,45 @@ describe('create', function () {
     sinon.assert.calledOnce(s);
   });
 
-  it('delays custom function call until constructor yields', function () {
-    var callback;
-    var s = sinon.spy();
-    var t = licy.create({
-      constructor: function (cb) {
-        callback = cb;
-      },
-      foo: s
+  it('delays custom function call until constructor yields (ctor)',
+    function () {
+      var callback;
+      var s = sinon.spy();
+      var t = licy.create({
+        constructor: function (cb) {
+          callback = cb;
+        },
+        foo: s
+      });
+
+      t.foo();
+
+      sinon.assert.notCalled(s);
+
+      callback();
+
+      sinon.assert.calledOnce(s);
     });
 
-    t.foo();
+  it('delays custom function call until constructor yields (return)',
+    function () {
+      var callback;
+      var s = sinon.spy();
+      var t = licy.create(function (cb) {
+        callback = cb;
+        return {
+          foo: s
+        };
+      });
 
-    sinon.assert.notCalled(s);
+      t.foo();
 
-    callback();
+      sinon.assert.notCalled(s);
 
-    sinon.assert.calledOnce(s);
-  });
+      callback();
+
+      sinon.assert.calledOnce(s);
+    });
 
   it('emits "create" event on root object', function () {
     var s = sinon.spy();
@@ -363,6 +384,42 @@ describe('create', function () {
 
     sinon.assert.calledOnce(s);
     sinon.assert.calledWithExactly(s, 42, 'abc', [1, 2, 3]);
+  });
+
+  it('uses last function as callback if arity is lower (ctor)', function () {
+    var s1 = sinon.spy(function (a, cb) {
+      /*jslint unparam: true*/
+      return;
+    });
+    var t = licy.define({
+      constructor: s1
+    });
+    var s2 = sinon.spy();
+
+    t(s2);
+
+    sinon.assert.calledOnce(s1);
+    sinon.assert.calledWith(s1, undefined, sinon.match.func);
+    sinon.assert.notCalled(s2);
+    s1.yield();
+    sinon.assert.calledOnce(s2);
+  });
+
+  it('uses last function as callback if arity is lower (return)', function () {
+    var s1 = sinon.spy(function (a, cb) {
+      /*jslint unparam: true*/
+      return {};
+    });
+    var t = licy.define(s1);
+    var s2 = sinon.spy();
+
+    t(s2);
+
+    sinon.assert.calledOnce(s1);
+    sinon.assert.calledWith(s1, undefined, sinon.match.func);
+    sinon.assert.notCalled(s2);
+    s1.yield();
+    sinon.assert.calledOnce(s2);
   });
 
 });
