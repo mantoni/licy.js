@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.1
+
+- Also use last function argument as the callback if arity is different
+
 ## 1.0.0
 
 - Complete rewrite. Everything changed. Nothing stayed as it was. Read the all
