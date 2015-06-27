@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.2
+
+- Do not invoke API function when emitting an event with the same name
+
 ## 1.0.1
 
 - Also use last function argument as the callback if arity is different
