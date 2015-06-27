@@ -310,4 +310,19 @@ describe('extend', function () {
     assert.equal(Child, licy.extend.firstCall.returnValue);
   }));
 
+  it('does not invoke extension on emit of existing fn', function () {
+    var s = sinon.spy();
+    var T = licy.extend(Super, function Fn() {
+      Fn.super_.call(this);
+      return {
+        test: s
+      };
+    });
+    var t = new T();
+
+    t.emit('test');
+
+    sinon.assert.notCalled(s);
+  });
+
 });

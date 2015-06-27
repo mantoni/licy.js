@@ -110,6 +110,43 @@ describe('define', function () {
     sinon.assert.calledOnce(spy);
   });
 
+  it('outer hub can subscribe to inner events', function () {
+    var spy = sinon.spy();
+    var t = licy.create(function () {
+      var self = this;
+      return {
+        test: function () {
+          self.emit('foo');
+        }
+      };
+    });
+
+    t.on('foo', spy);
+    t.test();
+
+    sinon.assert.calledOnce(spy);
+  });
+
+  it('does not invoke api function on inner emit with same name', function () {
+    var foo = sinon.spy();
+    var spy = sinon.spy();
+    var t = licy.create(function () {
+      var self = this;
+      return {
+        test: function () {
+          self.emit('foo');
+        },
+        foo: foo
+      };
+    });
+    t.on('foo', spy);
+
+    t.test();
+
+    sinon.assert.notCalled(foo);
+    sinon.assert.calledOnce(spy);
+  });
+
   it('can be used without new (custom constructor)', function () {
     var t = define(noop())();
 
