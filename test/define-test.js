@@ -147,6 +147,21 @@ describe('define', function () {
     sinon.assert.calledOnce(spy);
   });
 
+  it('invokes api function with generated callback', function () {
+    var cb;
+    var t = licy.create(function () {
+      return {
+        test: function (callback) {
+          cb = callback;
+        }
+      };
+    });
+
+    t.test();
+
+    assert.equal(typeof cb, 'function');
+  });
+
   it('can be used without new (custom constructor)', function () {
     var t = define(noop())();
 
