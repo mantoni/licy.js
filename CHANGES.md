@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.3
+
+- Invoke API functions with generated callback
+
 ## 1.0.2
 
 - Do not invoke API function when emitting an event with the same name
