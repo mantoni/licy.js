@@ -2,3 +2,11 @@ language: node_js
 node_js:
   - "0.10"
   - "0.12"
+  - "4.2"
+  - "5.2"
+
+addons:
+  sauce_connect:
+    username: mantoni
+    access_key:
+      secure: "lxSF+HP32hRfNNv2v5+Fw3at0J8eL4qbCe4bCwnNHswW5vUowT5iCFrzqdbrWECQnZc2f3mDnutSLxDvXSwQZqjkhl7IZLCAFbs0SnWBHQ+VteYza6voDOei1lB+XPLKW7esI5QLKpzxTNm9WocHGr0WKxPutXf+bgg87rEcuo4="
