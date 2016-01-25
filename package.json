@@ -20,7 +20,7 @@
     "lint": "jslint --edition=latest --color \"**/*.js\"",
     "wd": "mochify --wd",
     "pretest": "npm run lint",
-    "test": "mocha && npm run cover && npm run wd",
+    "test": "mocha && npm run cover",
     "cover": "mochify --cover"
   },
   "repository": {

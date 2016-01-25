@@ -5,8 +5,13 @@ node_js:
   - "4.2"
   - "5.2"
 
-addons:
-  sauce_connect:
-    username: mantoni
-    access_key:
-      secure: "lxSF+HP32hRfNNv2v5+Fw3at0J8eL4qbCe4bCwnNHswW5vUowT5iCFrzqdbrWECQnZc2f3mDnutSLxDvXSwQZqjkhl7IZLCAFbs0SnWBHQ+VteYza6voDOei1lB+XPLKW7esI5QLKpzxTNm9WocHGr0WKxPutXf+bgg87rEcuo4="
+sudo: false
+
+env:
+  global:
+    - SAUCE_USERNAME=mantoni
+    - secure: "lxSF+HP32hRfNNv2v5+Fw3at0J8eL4qbCe4bCwnNHswW5vUowT5iCFrzqdbrWECQnZc2f3mDnutSLxDvXSwQZqjkhl7IZLCAFbs0SnWBHQ+VteYza6voDOei1lB+XPLKW7esI5QLKpzxTNm9WocHGr0WKxPutXf+bgg87rEcuo4="
+
+script:
+  - 'npm test'
+  - 'if [ "x$TRAVIS_NODE_VERSION" = "x4.2" ]; then npm run wd; fi'
